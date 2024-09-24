@@ -27,7 +27,7 @@ const faunaOne = Fauna_One({
 });
 
 
-export default function Orders({ recipes }) {
+export default function RecipeCard({ recipes }) {
     if (recipes.length === 0) {
         return (
             <Container className=' justify-content-center align-items-center'>
