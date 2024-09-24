@@ -1,95 +1,60 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+'use client'
+import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+
+// Import  font
+import { EB_Garamond, Cinzel, Fauna_One, Montaga } from 'next/font/google';
+
+const fontCinzel = Cinzel({
+  weight: ['600'],
+  style: ['normal'],
+  subsets: ['latin'],
+});
+
+const faunaOne = Fauna_One({
+  weight: ['400'],
+  style: ['normal'],
+  subsets: ['latin'],
+});
+
+const ebGaramond = EB_Garamond({
+  weight: ['400'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+});
+
+const montega = Montaga({
+  weight: ['400'],
+  style: ['normal'],
+  subsets: ['latin'],
+});
+
 
 export default function Home() {
   return (
-    <div className={styles.page}>
-      <main className={styles.main}>
-        <Image
-          className={styles.logo}
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol>
-          <li>
-            Get started by editing <code>src/app/page.js</code>.
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
-
-        <div className={styles.ctas}>
-          <a
-            className={styles.primary}
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className={styles.logo}
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.secondary}
-          >
-            Read our docs
-          </a>
+    <main>
+      <section>
+        <div className="title-container">
+          <h2 className={`${montega.className} title center`}> Welcome to your personal meal planner!</h2>
+          <p className={`${faunaOne.className} text-center mt-4`}>
+            This is a space for you to get creative. <br></br>
+            A space to design your own menus. <br></br>
+          </p>
+          <p className={`${faunaOne.className} text-center mt-4`}>
+            New recipe ideas? Save them here.<br></br>
+            Stuck for a meal? Look back for inspiration.<br></br>
+          </p>
         </div>
-      </main>
-      <footer className={styles.footer}>
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
+      </section>
+      <section>
+        <div>
+          <h2 className={`${fontCinzel.className} title center mt-5` }>Let's get planning</h2>
+          <div className="center">
+            <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark me-2`} href="#" role="button">Sign Up</a>
+            <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark`} href="#" role="button">Login</a>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
