@@ -45,3 +45,16 @@ a {
   display: flex;
   justify-content: center;
 }
+
+.icon-button:hover {
+  background-color: #343a40; /* Dark background on hover */
+  color: white; /* Change text color to white */
+}
+
+.icon-button:hover .custom-icon {
+  color: white; /* Change icon color to white on hover */
+}
+
+.footer-icon-size{
+  font-size:20px !important;
+}
