@@ -44,16 +44,6 @@ async function getRecipes() {
 
 
 export default async function Recipes() {
-    /*let recipesJSX;
-    try {
-        const recipesArray = await getRecipes();
-        //console.log(JSON.stringify(recipesArray));
-        recipesJSX = <RecipeCard recipes={recipesArray}></RecipeCard>
-    }
-    catch (error) {
-        recipesJSX = <span>Unable to Fetch Recipes</span>
-    }*/
-
     const recipesArray = await getRecipes(); // Fetch data on the server
     const baseURL = "http://localhost:3000"; // Define the base URL
 
@@ -62,9 +52,6 @@ export default async function Recipes() {
             <section>
                 <div className="title-container">
                     <h2 className={`${montega.className} title center`}>Your Recipe Catalog</h2>
-                </div>
-                <div className="center">
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button">+ Add Recipe</a>
                 </div>
             </section>
             {/*{recipesJSX}*/}

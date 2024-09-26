@@ -23,10 +23,19 @@ export async function POST(req) {
 
 //delete recipe by id passed through body
 export async function DELETE(req) {
-    const body = await req.json(); 
-    let recipeId = parseInt(body.recipe_id);   
+    const body = await req.json();
+    //let recipeId = parseInt(body.recipe_id);
+    const {recipe_id} = body; //destructure
 
-    let recipeIndex = recipes.findIndex(recipe => recipe.recipe_id == recipeId);
+    let recipeIndex;
+    // Check if the ID is a valid integer
+    if (!isNaN(recipe_id)) {
+        const recipeId = parseInt(recipe_id);   //parse if just an INT
+        recipeIndex = recipes.findIndex(recipe => recipe.recipe_id === recipeId);
+    } else {
+        // If it's not an integer, assume it's a UUID
+        recipeIndex = recipes.findIndex(recipe => recipe.recipe_id === recipe_id);
+    }
 
     if (recipeIndex !== -1) {
         recipes.splice(recipeIndex, 1);
@@ -38,18 +47,18 @@ export async function DELETE(req) {
 
 //updates a recipe by the id 
 export async function PUT(req, res) {
-    const body = await req.json(); 
+    const body = await req.json();
     let updatedRecipe = body;
     let recipeId = parseInt(body.recipe_id);
 
     //search through all recipes to find the one to update
     let recipeIndex = recipes.findIndex(recipe => recipe.recipe_id == recipeId);
-    
+
     if (recipeIndex !== -1) {
 
-        recipes[recipeIndex] = {...recipes[recipeIndex], ...updatedRecipe}
+        recipes[recipeIndex] = { ...recipes[recipeIndex], ...updatedRecipe }
 
-        return ResponseBuilder.successResponse({ 'message': `${updatedRecipe.recipe_title} updated`});
+        return ResponseBuilder.successResponse({ 'message': `${updatedRecipe.recipe_title} updated` });
     }
     else
         return ResponseBuilder.invalidRequest('Recipe could not be found. Not updated', 400);
