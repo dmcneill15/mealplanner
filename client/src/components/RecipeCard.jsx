@@ -1,4 +1,5 @@
 'use client' // client component, not server rendered
+import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Col, Row, Container, CardFooter } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
@@ -27,8 +28,43 @@ const faunaOne = Fauna_One({
 });
 
 
-export default function RecipeCard({ recipes }) {
-    if (recipes.length === 0) {
+//Recipe card takes delete function as a prop which is actioned on the delete icon press
+export default function RecipeCard({ recipes, baseURL }) {
+    const [currentRecipes, setCurrentRecipes] = useState(recipes);
+
+    //add this function to refetch the data from the server once a delete/update/add has been performed
+    const fetchRecipes = async () => {
+        try {
+            const response = await fetch(`${baseURL}/api/recipes`, { cache: 'no-cache' });
+            const recipesArray = await response.json();
+            setCurrentRecipes(recipesArray);
+        } catch (error) {
+            console.error('Failed to fetch recipes:', error);
+        }
+    };
+
+    const deleteRecipe = async (recipeId) => {
+        try {
+            const response = await fetch(`${baseURL}/api/recipes`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ recipe_id: recipeId })
+            });
+
+            if (response.ok) {
+                //setCurrentRecipes(prevRecipes => prevRecipes.filter(recipe => recipe.recipe_id !== recipeId));
+                fetchRecipes();
+            } else {
+                console.error('Failed to delete recipe');
+            }
+        } catch (error) {
+            console.error('Error deleting recipe:', error);
+        }
+    };
+
+    if (currentRecipes.length === 0) {
         return (
             <Container className=' justify-content-center align-items-center'>
                 <Row xs={1} sm={1} md={1} className="g-4 justify-content-center">
@@ -48,7 +84,7 @@ export default function RecipeCard({ recipes }) {
     return (
         <Container className='justify-content-center align-items-center'>
             <Row xs={1} sm={2} md={5} className="justify-content-center">
-                {recipes.map(recipe => (
+                {currentRecipes.map(recipe => (
                     <Col key={recipe.recipe_id} className="g-3 justify-content-center">
                         <Card className=' border-2 text-center'>
                             <Card.Img
@@ -67,7 +103,8 @@ export default function RecipeCard({ recipes }) {
                                         <EditNoteIcon className='custom-icon' /></a>
                                 </Tooltip>
                                 <Tooltip title="Delete Recipe" arrow>
-                                    <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button">
+                                    <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button"
+                                        onClick={() => deleteRecipe(recipe.recipe_id)}>
                                         <DeleteForeverIcon className='custom-icon' /></a>
                                 </Tooltip>
                             </Card.Body>
