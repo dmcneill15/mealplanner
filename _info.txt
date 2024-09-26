@@ -1,0 +1,34 @@
+/app
+  /api
+    /users
+      route.js  // API route
+    /posts
+      route.js  // API route
+  /models
+    User.js  // User model
+    Post.js  // Post model
+  /controllers
+    userController.js
+    postController.js
+  /components
+  /pages
+
+
+
+OR
+
+/app
+  /components
+  /pages
+/server
+  /models
+    User.js
+    Post.js
+  /controllers
+    userController.js
+    postController.js
+  /api
+    /users
+      route.js
+    /posts
+      route.js
