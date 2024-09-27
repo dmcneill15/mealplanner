@@ -1,5 +1,5 @@
 'use client' // client component, not server rendered
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Col, Row, Container, Modal, Button, Form } from 'react-bootstrap';
@@ -31,7 +31,7 @@ const faunaOne = Fauna_One({
 
 //Recipe card takes delete function as a prop which is actioned on the delete icon press
 export default function RecipeCard({ recipes, baseURL }) {
-    const [currentRecipes, setCurrentRecipes] = useState(recipes);
+    const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    //set initial state to recipes passed in or set to empty if no recipe data
     const [showDelete, setShowDelete] = useState(false);
     const [showAddRecipe, setShowAddRecipe] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState(null);
@@ -39,6 +39,14 @@ export default function RecipeCard({ recipes, baseURL }) {
 
     // State for new recipe
     const [newRecipe, setNewRecipe] = useState({ recipe_id: '', recipe_title: '', method: '', servings: '', image: '' });
+
+    //handle the modal popup
+    const handleCloseDelete = () => setShowDelete(false);
+    const handleShowDelete = (recipeId, recipeTitle) => {
+        setRecipeToDelete(recipeId);
+        setRecipeTitle(recipeTitle);
+        setShowDelete(true);
+    }
 
     const handleCloseAddRecipe = () => {
         setShowAddRecipe(false);
@@ -75,14 +83,6 @@ export default function RecipeCard({ recipes, baseURL }) {
         }
     };
 
-    //handle the modal popup
-    const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (recipeId, recipeTitle) => {
-        setRecipeToDelete(recipeId);
-        setRecipeTitle(recipeTitle);
-        setShowDelete(true);
-    }
-
     const deleteRecipe = async () => {
         if (recipeToDelete) {
             try {
@@ -113,29 +113,20 @@ export default function RecipeCard({ recipes, baseURL }) {
     const fetchRecipes = async () => {
         try {
             const response = await fetch(`${baseURL}/api/recipes`, { cache: 'no-cache' });
-            const recipesArray = await response.json();
+            const result = await response.json();
+            const recipesArray = result.data;
+            console.log(recipesArray)
             setCurrentRecipes(recipesArray);
+            console.log(currentRecipes);
         } catch (error) {
             console.error('Failed to fetch recipes:', error);
         }
     };
 
-    {/*if (currentRecipes.length === 0) {
-        return (
-            <Container className=' justify-content-center align-items-center'>
-                <Row xs={1} sm={1} md={1} className="g-4 justify-content-center">
-                    <Col className="center g-4 justify-content-center">
-                        <p className={`${faunaOne.className} center mt-4`}>
-                            No recipes added yet<br></br>
-                        </p>
-                    </Col>
-                </Row>
-                <div className="center">
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + Add Recipe</a>
-                </div>
-            </Container>
-        );
-    }*/}
+    // Use useEffect to fetch recipes when the component mounts
+    useEffect(() => {
+        fetchRecipes();
+    }, []); // Empty dependency array means it runs only once on mount
 
     return (
         <>
