@@ -1,34 +1,18 @@
-/app
-  /api
-    /users
-      route.js  // API route
-    /posts
-      route.js  // API route
-  /models
-    User.js  // User model
-    Post.js  // Post model
-  /controllers
-    userController.js
-    postController.js
-  /components
-  /pages
-
-
-
-OR
-
-/app
-  /components
-  /pages
-/server
-  /models
-    User.js
-    Post.js
-  /controllers
-    userController.js
-    postController.js
-  /api
-    /users
-      route.js
-    /posts
-      route.js
+my-project/
+│
+├── client/                # Frontend (React)
+│   ├── public/            # Static files (e.g., index.html, images, etc.)
+│   ├── src/               # React components, hooks, pages, etc.
+│   ├── package.json       # Frontend dependencies and scripts
+│   └── vercel.json        # Configuration for Vercel (optional, for build settings)
+│
+├── server/                # Backend (API/Server)
+│   ├── api/               # Serverless functions or API code
+│   ├── routes/            # Express or custom API routes (if applicable)
+│   ├── utils/             # Utility files or services for server
+│   ├── package.json       # Backend dependencies (e.g., Express, MongoDB, etc.)
+│   └── vercel.json        # Configuration for Vercel (for serverless functions)
+│
+├── .gitignore             # Git ignore file
+├── README.md              # Documentation
+└── package.json           # Monorepo (root) package.json for managing both client and server
