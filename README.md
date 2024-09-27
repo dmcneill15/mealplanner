@@ -1,2 +1,2 @@
 # mealplanner
-IOD capstone projec
+IOD capstone project
