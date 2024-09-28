@@ -37,6 +37,8 @@ export default function RecipeCard({ recipes, baseURL }) {
     const [recipeTitle, setRecipeTitle] = useState(null);
     const [recipeToUpdate, setRecipeToUpdate] = useState(null);
     const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
+    const [showRecipeDetails, setShowRecipeDetails] = useState(false);
+    const [selectedRecipe, setSelectedRecipe] = useState(null); // To store the clicked recipe details
 
 
     // State for new recipe
@@ -68,6 +70,15 @@ export default function RecipeCard({ recipes, baseURL }) {
         setUpdatedRecipe({ recipe_title: recipe.recipe_title, method: recipe.method, servings: recipe.servings, image: recipe.image || '' });
         setShowUpdateRecipe(true);
     }
+
+    const handleShowRecipeDetails = (recipe) => {
+        setSelectedRecipe(recipe);
+        setShowRecipeDetails(true); // Open the modal
+    };
+
+    const handleCloseRecipeDetails = () => {
+        setShowRecipeDetails(false); // Close the modal
+    };
 
     const addRecipe = async (e) => {
         e.preventDefault(); //prevent the browser from refreshing when handling a form
@@ -206,10 +217,14 @@ export default function RecipeCard({ recipes, baseURL }) {
                                 <Card.Img
                                     className="mx-auto pt-2"
                                     src={recipe.image ? recipe.image : "/images/plate.png"}
-                                    alt={recipe.recipe_title}
+                                    alt={`${recipe.recipe_title} image`}
                                 />
                                 <Card.Body>
-                                    <Card.Title className={`${fontCinzel.className} title center fs-5`}>{recipe.recipe_title}</Card.Title>
+                                    <Card.Title className={`${fontCinzel.className} title center fs-5`}
+                                        onClick={() => handleShowRecipeDetails(recipe)}
+                                        style={{ cursor: 'pointer' }}
+                                    >{recipe.recipe_title
+                                        }</Card.Title>
                                     <Tooltip title="Add to Meal Plan" arrow>
                                         <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button">
                                             <PlaylistAddIcon className='custom-icon' /></a>
@@ -352,6 +367,27 @@ export default function RecipeCard({ recipes, baseURL }) {
                         </Button>
                     </Form>
                 </Modal.Body>
+            </Modal>
+
+            {/**SHOW RECIPE Modal Pop UP */}
+            <Modal show={showRecipeDetails} onHide={handleCloseRecipeDetails}>
+                <Modal.Header closeButton>
+                    <Modal.Title>{selectedRecipe?.recipe_title}</Modal.Title> {/* Use optional chaining to avoid errors */}
+                </Modal.Header>
+                <Modal.Body>
+                    <img
+                        className="img-fluid mb-3"
+                        src={selectedRecipe?.image ? selectedRecipe.image : "/images/plate.png"}
+                        alt={selectedRecipe?.recipe_title}
+                    />
+                    <p><strong>Method:</strong> {selectedRecipe?.method || 'No method available'}</p>
+                    <p><strong>Servings:</strong> {selectedRecipe?.servings || 'N/A'}</p>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="outline-dark" onClick={handleCloseRecipeDetails}>
+                        Close
+                    </Button>
+                </Modal.Footer>
             </Modal>
 
         </>
