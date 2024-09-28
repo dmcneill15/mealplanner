@@ -38,7 +38,7 @@ export default function RecipeCard({ recipes, baseURL }) {
     const [recipeTitle, setRecipeTitle] = useState(null);
 
     // State for new recipe
-    const [newRecipe, setNewRecipe] = useState({ recipe_id: '', recipe_title: '', method: '', servings: '', image: '' });
+    const [newRecipe, setNewRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
 
     //handle the modal popup
     const handleCloseDelete = () => setShowDelete(false);
@@ -50,7 +50,7 @@ export default function RecipeCard({ recipes, baseURL }) {
 
     const handleCloseAddRecipe = () => {
         setShowAddRecipe(false);
-        setNewRecipe({ recipe_id: '', recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
+        setNewRecipe({ recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
     };
     const handleShowAddRecipe = () => setShowAddRecipe(true);
 
@@ -59,11 +59,14 @@ export default function RecipeCard({ recipes, baseURL }) {
 
         const newRecipeWithId = {
             ...newRecipe,
-            recipe_id: uuidv4() // Generate a unique ID
+            //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
+            user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now
         };
 
+        console.log(newRecipeWithId);
+
         try {
-            const response = await fetch(`${baseURL}/api/recipes`, {
+            const response = await fetch(`${baseURL}/api/recipes/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

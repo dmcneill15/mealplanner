@@ -10,7 +10,7 @@ router.get('/', (req, res) => {
 });
 
 // Adds a POST route to create a new recipe
-router.post('/create/:email_id', (req, res) => {
+router.post('/create', (req, res) => {
     recipeController.createRecipe(req, res);
 });
 

@@ -11,14 +11,30 @@ const getRecipes = (res) => {
         });
 };
 
+/*const body = await req.json();
+    const recipe = body;
+
+    //this validation can be moved into a separate function
+    if (!recipe.recipe_id || !recipe.recipe_title) {
+        return ResponseBuilder.invalidRequest('Recipe is not complete', 400);
+    }
+
+    recipes.push(recipe);
+    return ResponseBuilder.successResponse({ 'message': 'recipe added' });
+*/
 const createRecipe = async (req, res) => {
     // Creates a new recipe using JSON data POSTed in request body
+    const recipe = req.body;
+    console.log(recipe);
+
     try {
-        const user = await User.findOne({ email_id: req.params.email_id });
+        //const user = await User.findOne({ user_id: req.params.email_id });
+        const user = await User.findOne({ user_id: recipe.user_id });
+
         if (user) {
             const newRecipe = new Recipe({
                 ...req.body,
-                user_id: user._id // Link the recipe to the user
+                //user_id: user._id // Link the recipe to the user
             });
 
             const savedRecipe = await newRecipe.save();
