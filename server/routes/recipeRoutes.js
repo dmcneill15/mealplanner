@@ -10,17 +10,18 @@ router.get('/', (req, res) => {
 });
 
 // Adds a POST route to create a new recipe
-router.post('/create/:email_id', (req, res) => {
+router.post('/create', (req, res) => {
     recipeController.createRecipe(req, res);
 });
 
 // Route to UPDATE a recipe
-router.put('/update/:recipe_id', (req, res) => {
+router.put('/update', (req, res) => {
     recipeController.updateRecipe(req, res);
 });
 
 // Route to DELETE a recipe
-router.delete('/delete/:recipe_id', (req, res) => {
+router.delete('/delete', (req, res) => {
+    console.log("Delete Recieved")
     recipeController.deleteRecipe(req, res);
 });
 

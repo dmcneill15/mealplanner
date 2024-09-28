@@ -1,6 +1,5 @@
 'use client' // client component, not server rendered
-import { useState } from 'react';
-import { v4 as uuidv4 } from 'uuid';
+import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Col, Row, Container, Modal, Button, Form } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
@@ -31,31 +30,55 @@ const faunaOne = Fauna_One({
 
 //Recipe card takes delete function as a prop which is actioned on the delete icon press
 export default function RecipeCard({ recipes, baseURL }) {
-    const [currentRecipes, setCurrentRecipes] = useState(recipes);
+    const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    //set initial state to recipes passed in or set to empty if no recipe data
     const [showDelete, setShowDelete] = useState(false);
     const [showAddRecipe, setShowAddRecipe] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState(null);
     const [recipeTitle, setRecipeTitle] = useState(null);
+    const [recipeToUpdate, setRecipeToUpdate] = useState(null);
+    const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
+
 
     // State for new recipe
-    const [newRecipe, setNewRecipe] = useState({ recipe_id: '', recipe_title: '', method: '', servings: '', image: '' });
+    const [newRecipe, setNewRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
+    // State for updated recipe
+    const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
+
+    //handle the modal popup
+    const handleCloseDelete = () => setShowDelete(false);
+    const handleShowDelete = (recipeTitle) => {
+        setRecipeToDelete(recipeTitle);
+        setRecipeTitle(recipeTitle);
+        setShowDelete(true);
+    }
 
     const handleCloseAddRecipe = () => {
         setShowAddRecipe(false);
-        setNewRecipe({ recipe_id: '', recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
+        setNewRecipe({ recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
     };
     const handleShowAddRecipe = () => setShowAddRecipe(true);
+
+    const handleCloseUpdateRecipe = () => {
+        setShowUpdateRecipe(false);
+        setUpdatedRecipe({ recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
+    }
+    const handleShowUpdateRecipe = (recipe) => {
+        console.log(recipe);
+        setRecipeToUpdate(recipe.recipe_title);
+        setUpdatedRecipe({ recipe_title: recipe.recipe_title, method: recipe.method, servings: recipe.servings, image: recipe.image || '' });
+        setShowUpdateRecipe(true);
+    }
 
     const addRecipe = async (e) => {
         e.preventDefault(); //prevent the browser from refreshing when handling a form
 
         const newRecipeWithId = {
             ...newRecipe,
-            recipe_id: uuidv4() // Generate a unique ID
+            //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
+            user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now
         };
-
         try {
-            const response = await fetch(`${baseURL}/api/recipes`, {
+            const response = await fetch(`${baseURL}/api/recipes/create`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -75,23 +98,17 @@ export default function RecipeCard({ recipes, baseURL }) {
         }
     };
 
-    //handle the modal popup
-    const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (recipeId, recipeTitle) => {
-        setRecipeToDelete(recipeId);
-        setRecipeTitle(recipeTitle);
-        setShowDelete(true);
-    }
-
     const deleteRecipe = async () => {
+        //e.preventDefault(); //prevent the browser from refreshing when handling a form
+
         if (recipeToDelete) {
             try {
-                const response = await fetch(`${baseURL}/api/recipes`, {
+                const response = await fetch(`${baseURL}/api/recipes/delete`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ recipe_id: recipeToDelete })
+                    body: JSON.stringify({ recipe_title: recipeToDelete })
                 });
 
                 if (response.ok) {
@@ -109,33 +126,59 @@ export default function RecipeCard({ recipes, baseURL }) {
         }
     };
 
+    const updateRecipe = async (e) => {
+        e.preventDefault(); //prevent the browser from refreshing when handling a form
+
+        // Only send updated fields to db
+        const recipeUpdates = {};
+        if (updatedRecipe.recipe_title !== recipeToUpdate) recipeUpdates.new_title = updatedRecipe.recipe_title;
+        if (updatedRecipe.method) recipeUpdates.new_method = updatedRecipe.method;
+        if (updatedRecipe.servings) recipeUpdates.new_servings = updatedRecipe.servings;
+        if (updatedRecipe.image) recipeUpdates.new_image = updatedRecipe.image;
+
+        try {
+            const response = await fetch(`${baseURL}/api/recipes/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    recipe_title: recipeToUpdate,
+                    ...recipeUpdates,
+                }),
+            });
+
+            if (response.ok) {
+                await fetchRecipes();
+            } else {
+                console.error('Failed to update recipe');
+            }
+        } catch (error) {
+            console.error('Error updating recipe:', error);
+        } finally {
+            handleCloseUpdateRecipe();
+        }
+    }
+
+
     //add this function to refetch the data from the server once a delete/update/add has been performed
     const fetchRecipes = async () => {
         try {
             const response = await fetch(`${baseURL}/api/recipes`, { cache: 'no-cache' });
-            const recipesArray = await response.json();
+            const result = await response.json();
+            const recipesArray = result.data;
+            console.log(recipesArray)
             setCurrentRecipes(recipesArray);
+            console.log(currentRecipes);
         } catch (error) {
             console.error('Failed to fetch recipes:', error);
         }
     };
 
-    {/*if (currentRecipes.length === 0) {
-        return (
-            <Container className=' justify-content-center align-items-center'>
-                <Row xs={1} sm={1} md={1} className="g-4 justify-content-center">
-                    <Col className="center g-4 justify-content-center">
-                        <p className={`${faunaOne.className} center mt-4`}>
-                            No recipes added yet<br></br>
-                        </p>
-                    </Col>
-                </Row>
-                <div className="center">
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + Add Recipe</a>
-                </div>
-            </Container>
-        );
-    }*/}
+    // Use useEffect to fetch recipes when the component mounts
+    useEffect(() => {
+        fetchRecipes();
+    }, []); // Empty dependency array means it runs only once on mount
 
     return (
         <>
@@ -172,12 +215,13 @@ export default function RecipeCard({ recipes, baseURL }) {
                                             <PlaylistAddIcon className='custom-icon' /></a>
                                     </Tooltip>
                                     <Tooltip title="Edit Recipe" arrow>
-                                        <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button">
+                                        <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button"
+                                            onClick={() => handleShowUpdateRecipe(recipe)}>
                                             <EditNoteIcon className='custom-icon' /></a>
                                     </Tooltip>
                                     <Tooltip title="Delete Recipe" arrow>
                                         <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button"
-                                            onClick={() => handleShowDelete(recipe.recipe_id, recipe.recipe_title)}>
+                                            onClick={() => handleShowDelete(recipe.recipe_title)}>
                                             <DeleteForeverIcon className='custom-icon' /></a>
                                     </Tooltip>
                                 </Card.Body>
@@ -214,7 +258,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             <Form.Label>Recipe Title*</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Enter recipe title"
+                                placeholder="Title (required)"
                                 value={newRecipe.recipe_title}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, recipe_title: e.target.value })}
                                 required
@@ -226,7 +270,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             <Form.Control
                                 as="textarea"
                                 rows={3} // Set the number of visible rows
-                                placeholder="Method"
+                                placeholder="Method (optional)"
                                 value={newRecipe.method}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, method: e.target.value })}
                             />
@@ -235,7 +279,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             <Form.Label>Servings</Form.Label>
                             <Form.Control
                                 type="number"
-                                placeholder="Servings"
+                                placeholder="Servings (optional)"
                                 value={newRecipe.servings}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, servings: e.target.value })}
                             />
@@ -249,8 +293,62 @@ export default function RecipeCard({ recipes, baseURL }) {
                                 onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
                             />
                         </Form.Group>*/}
-                        <Button variant="primary" type="submit" className="mt-3">
+                        <Button variant="outline-dark" type="submit" className="mt-3">
                             Add Recipe
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            {/**UPDATE RECIPE Modal Pop UP */}
+            <Modal show={showUpdateRecipe} onHide={handleCloseUpdateRecipe}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Update Recipe</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={updateRecipe}>
+                        <Form.Group controlId="formUpdateRecipeTitle">
+                            <Form.Label>Recipe Title*</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Title (required)"
+                                value={updatedRecipe.recipe_title}
+                                onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, recipe_title: e.target.value })}
+                                required
+                                autoFocus
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formUpdateRecipeMethod" className="mt-3">
+                            <Form.Label>Method</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3} // Set the number of visible rows
+                                placeholder="Method (optional)"
+                                value={updatedRecipe.method}
+                                onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, method: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formUpdateRecipeServings" className="mt-3">
+                            <Form.Label>Servings</Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder="Servings (optional)"
+                                value={updatedRecipe.servings}
+                                onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, servings: e.target.value })}
+                            />
+                        </Form.Group>
+                        {/* Uncomment if you need to update the recipe image */}
+                        {/* <Form.Group controlId="formUpdateRecipeImage" className="mt-3">
+                        <Form.Label>Recipe Image URL</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter image URL"
+                            value={updatedRecipe.image}
+                            onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, image: e.target.value })}
+                        />
+                    </Form.Group> */}
+                        <Button variant="outline-dark" type="submit" className="mt-3">
+                            Update Recipe
                         </Button>
                     </Form>
                 </Modal.Body>
