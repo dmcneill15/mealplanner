@@ -35,9 +35,14 @@ export default function RecipeCard({ recipes, baseURL }) {
     const [showAddRecipe, setShowAddRecipe] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState(null);
     const [recipeTitle, setRecipeTitle] = useState(null);
+    const [recipeToUpdate, setRecipeToUpdate] = useState(null);
+    const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
+
 
     // State for new recipe
     const [newRecipe, setNewRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
+    // State for updated recipe
+    const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
 
     //handle the modal popup
     const handleCloseDelete = () => setShowDelete(false);
@@ -53,6 +58,17 @@ export default function RecipeCard({ recipes, baseURL }) {
     };
     const handleShowAddRecipe = () => setShowAddRecipe(true);
 
+    const handleCloseUpdateRecipe = () => {
+        setShowUpdateRecipe(false);
+        setUpdatedRecipe({ recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
+    }
+    const handleShowUpdateRecipe = (recipe) => {
+        console.log(recipe);
+        setRecipeToUpdate(recipe.recipe_title);
+        setUpdatedRecipe({ recipe_title: recipe.recipe_title, method: recipe.method, servings: recipe.servings, image: recipe.image || '' });
+        setShowUpdateRecipe(true);
+    }
+
     const addRecipe = async (e) => {
         e.preventDefault(); //prevent the browser from refreshing when handling a form
 
@@ -61,9 +77,6 @@ export default function RecipeCard({ recipes, baseURL }) {
             //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
             user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now
         };
-
-        console.log(newRecipeWithId);
-
         try {
             const response = await fetch(`${baseURL}/api/recipes/create`, {
                 method: 'POST',
@@ -112,6 +125,41 @@ export default function RecipeCard({ recipes, baseURL }) {
             }
         }
     };
+
+    const updateRecipe = async (e) => {
+        e.preventDefault(); //prevent the browser from refreshing when handling a form
+
+        // Only send updated fields to db
+        const recipeUpdates = {};
+        if (updatedRecipe.recipe_title !== recipeToUpdate) recipeUpdates.new_title = updatedRecipe.recipe_title;
+        if (updatedRecipe.method) recipeUpdates.new_method = updatedRecipe.method;
+        if (updatedRecipe.servings) recipeUpdates.new_servings = updatedRecipe.servings;
+        if (updatedRecipe.image) recipeUpdates.new_image = updatedRecipe.image;
+
+        try {
+            const response = await fetch(`${baseURL}/api/recipes/update`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    recipe_title: recipeToUpdate,
+                    ...recipeUpdates,
+                }),
+            });
+
+            if (response.ok) {
+                await fetchRecipes();
+            } else {
+                console.error('Failed to update recipe');
+            }
+        } catch (error) {
+            console.error('Error updating recipe:', error);
+        } finally {
+            handleCloseUpdateRecipe();
+        }
+    }
+
 
     //add this function to refetch the data from the server once a delete/update/add has been performed
     const fetchRecipes = async () => {
@@ -167,7 +215,8 @@ export default function RecipeCard({ recipes, baseURL }) {
                                             <PlaylistAddIcon className='custom-icon' /></a>
                                     </Tooltip>
                                     <Tooltip title="Edit Recipe" arrow>
-                                        <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button">
+                                        <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button"
+                                            onClick={() => handleShowUpdateRecipe(recipe)}>
                                             <EditNoteIcon className='custom-icon' /></a>
                                     </Tooltip>
                                     <Tooltip title="Delete Recipe" arrow>
@@ -246,6 +295,60 @@ export default function RecipeCard({ recipes, baseURL }) {
                         </Form.Group>*/}
                         <Button variant="outline-dark" type="submit" className="mt-3">
                             Add Recipe
+                        </Button>
+                    </Form>
+                </Modal.Body>
+            </Modal>
+
+            {/**UPDATE RECIPE Modal Pop UP */}
+            <Modal show={showUpdateRecipe} onHide={handleCloseUpdateRecipe}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Update Recipe</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Form onSubmit={updateRecipe}>
+                        <Form.Group controlId="formUpdateRecipeTitle">
+                            <Form.Label>Recipe Title*</Form.Label>
+                            <Form.Control
+                                type="text"
+                                placeholder="Title (required)"
+                                value={updatedRecipe.recipe_title}
+                                onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, recipe_title: e.target.value })}
+                                required
+                                autoFocus
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formUpdateRecipeMethod" className="mt-3">
+                            <Form.Label>Method</Form.Label>
+                            <Form.Control
+                                as="textarea"
+                                rows={3} // Set the number of visible rows
+                                placeholder="Method (optional)"
+                                value={updatedRecipe.method}
+                                onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, method: e.target.value })}
+                            />
+                        </Form.Group>
+                        <Form.Group controlId="formUpdateRecipeServings" className="mt-3">
+                            <Form.Label>Servings</Form.Label>
+                            <Form.Control
+                                type="number"
+                                placeholder="Servings (optional)"
+                                value={updatedRecipe.servings}
+                                onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, servings: e.target.value })}
+                            />
+                        </Form.Group>
+                        {/* Uncomment if you need to update the recipe image */}
+                        {/* <Form.Group controlId="formUpdateRecipeImage" className="mt-3">
+                        <Form.Label>Recipe Image URL</Form.Label>
+                        <Form.Control
+                            type="text"
+                            placeholder="Enter image URL"
+                            value={updatedRecipe.image}
+                            onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, image: e.target.value })}
+                        />
+                    </Form.Group> */}
+                        <Button variant="outline-dark" type="submit" className="mt-3">
+                            Update Recipe
                         </Button>
                     </Form>
                 </Modal.Body>

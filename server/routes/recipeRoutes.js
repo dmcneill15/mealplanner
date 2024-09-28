@@ -15,7 +15,7 @@ router.post('/create', (req, res) => {
 });
 
 // Route to UPDATE a recipe
-router.put('/update/:recipe_id', (req, res) => {
+router.put('/update', (req, res) => {
     recipeController.updateRecipe(req, res);
 });
 
