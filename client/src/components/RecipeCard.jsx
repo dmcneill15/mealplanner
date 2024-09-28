@@ -41,8 +41,8 @@ export default function RecipeCard({ recipes, baseURL }) {
 
     //handle the modal popup
     const handleCloseDelete = () => setShowDelete(false);
-    const handleShowDelete = (recipeId, recipeTitle) => {
-        setRecipeToDelete(recipeId);
+    const handleShowDelete = (recipeTitle) => {
+        setRecipeToDelete(recipeTitle);
         setRecipeTitle(recipeTitle);
         setShowDelete(true);
     }
@@ -86,14 +86,16 @@ export default function RecipeCard({ recipes, baseURL }) {
     };
 
     const deleteRecipe = async () => {
+        //e.preventDefault(); //prevent the browser from refreshing when handling a form
+
         if (recipeToDelete) {
             try {
-                const response = await fetch(`${baseURL}/api/recipes`, {
+                const response = await fetch(`${baseURL}/api/recipes/delete`, {
                     method: 'DELETE',
                     headers: {
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ recipe_id: recipeToDelete })
+                    body: JSON.stringify({ recipe_title: recipeToDelete })
                 });
 
                 if (response.ok) {
@@ -170,7 +172,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                                     </Tooltip>
                                     <Tooltip title="Delete Recipe" arrow>
                                         <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button"
-                                            onClick={() => handleShowDelete(recipe.recipe_id, recipe.recipe_title)}>
+                                            onClick={() => handleShowDelete(recipe.recipe_title)}>
                                             <DeleteForeverIcon className='custom-icon' /></a>
                                     </Tooltip>
                                 </Card.Body>

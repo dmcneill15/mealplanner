@@ -20,7 +20,8 @@ router.put('/update/:recipe_id', (req, res) => {
 });
 
 // Route to DELETE a recipe
-router.delete('/delete/:recipe_id', (req, res) => {
+router.delete('/delete', (req, res) => {
+    console.log("Delete Recieved")
     recipeController.deleteRecipe(req, res);
 });
 

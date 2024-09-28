@@ -25,7 +25,7 @@ const getRecipes = (res) => {
 const createRecipe = async (req, res) => {
     // Creates a new recipe using JSON data POSTed in request body
     const recipe = req.body;
-    console.log(recipe);
+    //console.log(recipe);
 
     try {
         //const user = await User.findOne({ user_id: req.params.email_id });
@@ -48,21 +48,12 @@ const createRecipe = async (req, res) => {
     }
 };
 
-const updateRecipe = (req, res) => {
-    // updates the user matching the email from the param using JSON data POSTed in request body
-    console.log(req.body);
-    Recipe.findOneAndUpdate({ recipe_id: req.params.recipe_id }, req.body, { new: true })
-        .then(data => res.send({ result: 200, data: data }))
-        .catch(err => {
-            console.log(err);
-            res.send({ result: 500, error: err.message });
-        });
-};
+//search for recipe based on title & delete
+const deleteRecipe = async (req, res) => {
+    const recipe = req.body;
+    console.log(recipe);
 
-const deleteRecipe = (req, res) => {
-    console.log({ recipe_id: req.params.recipe_id });
-    // deletes the user matching the email from the param
-    Recipe.findOneAndDelete({ recipe_id: req.params.recipe_id })
+    Recipe.findOneAndDelete({ recipe_title: recipe.recipe_title })
         .then(data => {
             if (data) {
                 res.send({ result: 200, data: data });
@@ -75,6 +66,19 @@ const deleteRecipe = (req, res) => {
             res.send({ result: 500, error: err.message });
         });
 };
+
+const updateRecipe = (req, res) => {
+    // updates the user matching the email from the param using JSON data POSTed in request body
+    console.log(req.body);
+    Recipe.findOneAndUpdate({ recipe_id: req.params.recipe_id }, req.body, { new: true })
+        .then(data => res.send({ result: 200, data: data }))
+        .catch(err => {
+            console.log(err);
+            res.send({ result: 500, error: err.message });
+        });
+};
+
+
 
 export {
     getRecipes,
