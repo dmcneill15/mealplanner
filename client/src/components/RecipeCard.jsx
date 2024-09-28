@@ -1,6 +1,5 @@
 'use client' // client component, not server rendered
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Col, Row, Container, Modal, Button, Form } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
@@ -208,7 +207,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             <Form.Label>Recipe Title*</Form.Label>
                             <Form.Control
                                 type="text"
-                                placeholder="Enter recipe title"
+                                placeholder="Title (required)"
                                 value={newRecipe.recipe_title}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, recipe_title: e.target.value })}
                                 required
@@ -220,7 +219,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             <Form.Control
                                 as="textarea"
                                 rows={3} // Set the number of visible rows
-                                placeholder="Method"
+                                placeholder="Method (optional)"
                                 value={newRecipe.method}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, method: e.target.value })}
                             />
@@ -229,7 +228,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             <Form.Label>Servings</Form.Label>
                             <Form.Control
                                 type="number"
-                                placeholder="Servings"
+                                placeholder="Servings (optional)"
                                 value={newRecipe.servings}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, servings: e.target.value })}
                             />
@@ -243,7 +242,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                                 onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
                             />
                         </Form.Group>*/}
-                        <Button variant="primary" type="submit" className="mt-3">
+                        <Button variant="outline-dark" type="submit" className="mt-3">
                             Add Recipe
                         </Button>
                     </Form>
