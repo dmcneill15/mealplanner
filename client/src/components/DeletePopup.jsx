@@ -1,27 +1,6 @@
-import { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
-import { deleteRecipe } from '../app/api/recipesApi'
 
-const DeleteModal = ({ show, onHide, recipeTitle, onDeleteSuccess, baseURL }) => {
-    const [isDeleting, setIsDeleting] = useState(false);
-
-    const handleDelete = async () => {
-        if (!recipeTitle)
-            return;
-
-        setIsDeleting(true);
-
-        const result = await deleteRecipe(baseURL, recipeTitle);
-        setIsDeleting(false);
-
-        if (result.success) {
-            onDeleteSuccess();  // Callback to notify the parent component of success
-        } else {
-            console.error('Failed to delete recipe');
-        }
-        onHide();  // Close the modal regardless of success or failure
-    };
-
+const DeletePopup = ({ show, onHide, recipeTitle, handleDelete, isDeleting }) => {
     return (
         <Modal show={show} onHide={onHide}>
             <Modal.Header closeButton>
@@ -40,4 +19,4 @@ const DeleteModal = ({ show, onHide, recipeTitle, onDeleteSuccess, baseURL }) =>
     );
 };
 
-export default DeleteModal;
+export default DeletePopup;

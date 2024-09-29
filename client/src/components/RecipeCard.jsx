@@ -83,10 +83,12 @@ export default function RecipeCard({ recipes, baseURL }) {
     const {
         showDelete,         //Hook returns the state of the modal popup - visible or not
         recipeTitle,        //Hook returns the title of the recipe to delete
+        isDeleting,         //Hook returns the state of the deleting function
         handleShowDelete,   //Hook returns the function to trigger displaying the modal
         handleCloseDelete,  //Hook returns the function to handle closing the modal
         onDeleteSuccess,    //Hook returns the function to handle a successful delete - refetching the recipes
-    } = useDeletePopup(fetchRecipes);  // Pass fetchRecipes to the hook
+        handleDelete,       //Hook returns the function to handle the api calls to delete the recipe 
+    } = useDeletePopup(fetchRecipes, baseURL);  // Pass fetchRecipes to the hook
     //-------------------------------------REFACTORED DELETE */
 
     // State for new recipe
@@ -282,8 +284,8 @@ export default function RecipeCard({ recipes, baseURL }) {
                 show={showDelete}
                 onHide={handleCloseDelete}
                 recipeTitle={recipeTitle}
-                onDeleteSuccess={onDeleteSuccess}
-                baseURL={baseURL}
+                handleDelete={handleDelete}
+                isDeleting={isDeleting}
             />
             {/*<Modal show={showDelete} onHide={handleCloseDelete}>
                 <Modal.Header closeButton>

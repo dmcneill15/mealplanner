@@ -1,9 +1,11 @@
 import { useState } from 'react';
+import { deleteRecipe } from '../app/api/recipesApi';
 
-export const useDeletePopup = (fetchRecipes) => {
+export const useDeletePopup = (fetchRecipes, baseURL) => {
     const [showDelete, setShowDelete] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState('');
     const [recipeTitle, setRecipeTitle] = useState('');
+    const [isDeleting, setIsDeleting] = useState(false);    //state can be used to give user feedback iof progress(spinning wheel)
 
     const handleShowDelete = (recipeTitle) => {
         setRecipeToDelete(recipeTitle);
@@ -22,12 +24,31 @@ export const useDeletePopup = (fetchRecipes) => {
         handleCloseDelete();
     };
 
+    const handleDelete = async () => {
+        if (!recipeTitle) return;
+
+        setIsDeleting(true);    
+
+        const result = await deleteRecipe(baseURL, recipeToDelete);
+        setIsDeleting(false);
+
+        if (result.success) {
+            fetchRecipes();  // Re-fetch the recipes after successful delete
+        } else {
+            console.error('Failed to delete recipe');
+        }
+
+        handleCloseDelete();  // Close the modal
+    };
+
     return {
         showDelete,
         recipeToDelete,
         recipeTitle,
+        isDeleting,
         handleShowDelete,
         handleCloseDelete,
         onDeleteSuccess,
+        handleDelete
     };
 };
