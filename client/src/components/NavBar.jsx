@@ -29,6 +29,7 @@ const faunaOne = Fauna_One({
 
 
 function NavBar() {
+    console.log("Rendering Navbar");
     const path = usePathname(); // hook to check current path
 
     return (
@@ -40,7 +41,7 @@ function NavBar() {
             </header>
 
             <br></br>
-            <Navbar collapseOnSelect bg="" data-bs-theme="light" className="mb-3">
+            <Navbar collapseOnSelect data-bs-theme="light" className="mb-3">
                 <Container>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
