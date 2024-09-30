@@ -1,5 +1,4 @@
 'use client' // client component, not server rendered
-import "../app/globals.css";
 import { usePathname } from 'next/navigation'
 import Image from "next/image";
 import Container from 'react-bootstrap/Container';
@@ -29,7 +28,6 @@ const faunaOne = Fauna_One({
 
 
 function NavBar() {
-    console.log("Rendering Navbar");
     const path = usePathname(); // hook to check current path
 
     return (

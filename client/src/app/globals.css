@@ -54,27 +54,29 @@ body {
   font-size:20px !important;
 }
 
-/* calendarStyles.css */
+/* Calendar Styles */
 .fc {
   color: black !important; /* Set all text in the calendar to black */
 }
 
 .fc-daygrid-event {
   text-decoration: none !important; /* Remove underline from event text */
+  color: black !important; /* Ensure event text color is black */
 }
 
 .fc-daygrid-event a {
-  color: black; /* Set link color to black */
-  text-decoration: none; /* Ensure no underline for links */
+  color: black !important; /* Set link color to black */
+  text-decoration: none !important; /* Ensure no underline for links */
 }
 
-/*change the formatting of the calendar buttons*/
+/* Calendar Button Styles */
 .fc-button {
-  background-color: white !important; /* Green background */
-  color: black !important; /* White text */
+  background-color: white !important; /* White background */
+  color: black !important; /* Black text */
   border: none; /* No borders */
 }
 
 .fc-button:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background-color: black !important; /* Darker green on hover */
+  color:white !important;; 
 }

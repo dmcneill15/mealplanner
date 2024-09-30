@@ -1,4 +1,3 @@
-import RecipeCard from '@/components/RecipeCard';
 import Calendar from '@/components/Calendar';
 
 //import recipesData from '@/data/recipes.js'
@@ -37,7 +36,7 @@ export default async function Recipes() {
                 <div className="title-container">
                     <h2 className={`${montega.className} title center`}>Your Meal Plan</h2>
                 </div>
-            </section>
+            </section><br></br>
             <Calendar />
         </main>
     )

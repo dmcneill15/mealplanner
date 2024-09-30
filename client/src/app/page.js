@@ -1,6 +1,5 @@
 'use client'
 import 'bootstrap/dist/css/bootstrap.min.css';
-//import 'bootstrap/dist/js/bootstrap.bundle.min.js';
 
 // Import  font
 import { EB_Garamond, Cinzel, Fauna_One, Montaga } from 'next/font/google';

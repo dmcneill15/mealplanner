@@ -2,18 +2,125 @@
 import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
-import timeGridPlugin from '@fullcalendar/timegrid'
-import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction'
+import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
+//import { useRecipes } from '@/hooks/useRecipes';
+import { fetchRecipes } from '@/app/api/recipesApi';
+import { EventSourceInput } from '@fullcalendar/core/index.js'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Fragment } from 'react'
 
 export default function Calendar() {
+    /*const [events, setEvents] = useState([
+        { title: 'event 1', id: '1' },
+        { title: 'event 2', id: '2' },
+        { title: 'event 3', id: '3' },
+        { title: 'event 4', id: '4' },
+        { title: 'event 5', id: '5' },
+    ])*/
+    const [events, setEvents] = useState([]);
+    const [allEvents, setAllEvents] = useState([])
+    const [showModal, setShowModal] = useState(false)
+    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [idToDelete, setIdToDelete] = useState(null)
+    const [newEvent, setNewEvent] = useState({
+        title: '',
+        start: '',
+        allDay: false,
+        id: 0
+    })
 
-    const [events, setEvents] = useState([
-        { title: 'Sample Event 1', date: '2024-09-30' },
-        { title: 'Sample Event 2', date: '2024-10-02' },
-        // Add more initial events here
-    ]);
+    // Fetch recipes when the component mounts
+    useEffect(() => {
+        const getRecipes = async () => {
+            try {
+                const recipes = await fetchRecipes();
+                const formattedEvents = recipes.map(recipe => ({
+                    title: recipe.recipe_title, // Assuming recipe has a 'name' property
+                    id: recipe.recipe_id, // Assuming recipe has an 'id' property
+                }));
+                setEvents(formattedEvents);
+            } catch (error) {
+                console.error('Error fetching recipes:', error);
+            }
+        };
+
+        getRecipes();
+    }, []);
+
+    useEffect(() => {
+        let draggableEl = document.getElementById('draggable-el')
+        if (draggableEl) {
+            new Draggable(draggableEl, {
+                itemSelector: ".fc-event",
+                eventData: function (eventEl) {
+                    let title = eventEl.getAttribute("title")
+                    let id = eventEl.getAttribute("data")
+                    let start = eventEl.getAttribute("start")
+                    return { title, id, start }
+                }
+            })
+        }
+    }, [])
+
+
+
+
+    function handleDateClick(arg) {
+        setNewEvent({
+            ...newEvent,
+            start: arg.date,
+            allDay: arg.allDay,
+            id: new Date().getTime()
+        });
+        setShowModal(true);
+    }
+
+    function addEvent(data) {
+        const event = { ...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime() }
+        setAllEvents([...allEvents, event])
+    }
+
+    function handleDeleteModal(data) {
+        setShowDeleteModal(true);
+        setIdToDelete(Number(data.event.id));
+    }
+
+    function handleDelete() {
+        setAllEvents(allEvents.filter(event => Number(event.id) !== Number(idToDelete)))
+        setShowDeleteModal(false)
+        setIdToDelete(null)
+    }
+
+    function handleCloseModal() {
+        setShowModal(false)
+        setNewEvent({
+            title: '',
+            start: '',
+            allDay: false,
+            id: 0
+        })
+        setShowDeleteModal(false)
+        setIdToDelete(null)
+    }
+
+    const handleChange = (e) => {
+        setNewEvent({
+            ...newEvent,
+            title: e.target.value
+        })
+    }
+
+    function handleSubmit(e) {
+        e.preventDefault()
+        setAllEvents([...allEvents, newEvent])
+        setShowModal(false)
+        setNewEvent({
+            title: '',
+            start: '',
+            allDay: false,
+            id: 0
+        })
+    }
 
     return (
         <div style={styles.container}>
@@ -23,20 +130,35 @@ export default function Calendar() {
                         headerToolbar={{
                             left: 'today prev next',
                             center: 'title',
-                            right: 'dayGridMonth listMonth'
+                            right: 'dayGridMonth,listMonth'
                         }}
-                        plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin, listPlugin]} // Use the day grid plugin
-                        initialView="dayGridMonth" // Start with the month view
-                        events={events} // Set the events
-                        style={styles.calendarStyle} // Ensure it fills the height
+                        plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+                        initialView="dayGridMonth"
+                        events={allEvents}
+                        nowIndicator={true}
+                        editable={true}
+                        droppable={true}
+                        selectable={true}
+                        selectMirror={true}
+                        dateClick={handleDateClick}
+                        drop={(data) => addEvent(data)}
+                        eventClick={(data) => handleDeleteModal(data)}
                     />
                 </div>
             </div>
-            <div style={{ ...styles.rightSide, backgroundColor: 'red' }}>
+            <div style={styles.rightSide} id="draggable-el">
                 <h2 style={styles.heading}>Add Your Recipes</h2>
-                <div style={styles.content}>
-                    {/* Add more content here as needed */}
-                    Right Side Content
+                <div style={{ ...styles.content, display: 'block' }} >
+                    {events.map(event => (
+                        <div
+                            className="fc-event border-2 p-1 m-2 w-full rounded-md ml-auto"
+                            title={event.title}
+                            key={event.id}
+                            style={{ cursor: 'pointer' }}
+                        >
+                            {event.title}
+                        </div>
+                    ))}
                 </div>
             </div>
         </div>
@@ -55,7 +177,7 @@ const styles = {
         flexDirection: 'column', // Stack heading and calendar vertically
         justifyContent: 'flex-start', // Align items to the top
         alignItems: 'center',
-        border: '5px solid blue', // Blue border instead of background
+        border: '2px solid blue', // Blue border instead of background
         padding: '20px', // Padding inside the border
         borderRadius: '10px', // Optional: rounded corners for the border
     },
@@ -80,7 +202,8 @@ const styles = {
         flexDirection: 'column', // Stack heading and content vertically
         justifyContent: 'flex-start', // Align items to the top
         alignItems: 'center',
-        color: 'white', // Text color for contrast
+        color: 'black', // Text color for contrast
+        border: '2px solid red',
         fontSize: '24px',
         fontWeight: 'bold',
         padding: '20px', // Optional padding for aesthetics
