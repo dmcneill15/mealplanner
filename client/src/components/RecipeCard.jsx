@@ -8,7 +8,9 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Tooltip from '@mui/material/Tooltip';
 
 import DeletePopup from './DeletePopup';
-import { useDeletePopup } from '@/hooks/useDeletePopup';    //custome hook to handle delete popup
+import { useDeletePopup } from '@/hooks/useDeletePopup';    //custom hook to handle delete popup
+import RecipeDetailsPopup from './RecipeDetailsPopup';
+import { useRecipeDetailsPopup } from '@/hooks/useRecipeDetailsPopup';
 
 import { EB_Garamond, Cinzel, Fauna_One } from 'next/font/google';
 
@@ -35,13 +37,12 @@ const faunaOne = Fauna_One({
 export default function RecipeCard({ recipes, baseURL }) {
     const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    //set initial state to recipes passed in or set to empty if no recipe data
     //const [showDelete, setShowDelete] = useState(false);
-    const [showAddRecipe, setShowAddRecipe] = useState(false);
+
     //const [recipeToDelete, setRecipeToDelete] = useState(null);
     //const [recipeTitle, setRecipeTitle] = useState(null);
     const [recipeToUpdate, setRecipeToUpdate] = useState(null);
     const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
-    const [showRecipeDetails, setShowRecipeDetails] = useState(false);
-    const [selectedRecipe, setSelectedRecipe] = useState(null); // To store the clicked recipe details
+
 
     //add this function to refetch the data from the server once a delete/update/add has been performed
     const fetchRecipes = async () => {
@@ -57,6 +58,10 @@ export default function RecipeCard({ recipes, baseURL }) {
         }
     };
 
+    // Use useEffect to fetch recipes when the component mounts
+    useEffect(() => {
+        fetchRecipes();
+    }, []); // Empty dependency array means it runs only once on mount
 
     //-------------------------------------REFACTORED DELETE */
     /*const [showDelete, setShowDelete] = useState(false);
@@ -78,6 +83,34 @@ export default function RecipeCard({ recipes, baseURL }) {
         handleCloseDelete();
     };*/
 
+    /*const deleteRecipe = async () => {
+    //e.preventDefault(); //prevent the browser from refreshing when handling a form
+
+    if (recipeToDelete) {
+        try {
+            const response = await fetch(`${baseURL}/api/recipes/delete`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ recipe_title: recipeToDelete })
+            });
+
+            if (response.ok) {
+                fetchRecipes();
+            } else {
+                console.error('Failed to delete recipe');
+            }
+        }
+        catch (error) {
+            console.error('Error deleting recipe:', error);
+        }
+        finally {
+            handleCloseDelete();
+        }
+    }
+};*/
+
     //-------------------------------------REFACTORED DELETE - to a custom hook - able to use this hook in other components */
     // Use the custom hook, passing the fetchRecipes function
     const {
@@ -91,18 +124,23 @@ export default function RecipeCard({ recipes, baseURL }) {
     } = useDeletePopup(fetchRecipes, baseURL);  // Pass fetchRecipes to the hook
     //-------------------------------------REFACTORED DELETE */
 
+
+    //-------------------------------------REFACTORED ADD */
     // State for new recipe
     const [newRecipe, setNewRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
-    // State for updated recipe
-    const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
-
-
+    const [showAddRecipe, setShowAddRecipe] = useState(false);
 
     const handleCloseAddRecipe = () => {
         setShowAddRecipe(false);
         setNewRecipe({ recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
     };
     const handleShowAddRecipe = () => setShowAddRecipe(true);
+    //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    //-------------------------------------REFACTORED ADD */
+
+
+    // State for updated recipe
+    const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
 
     const handleCloseUpdateRecipe = () => {
         setShowUpdateRecipe(false);
@@ -115,6 +153,9 @@ export default function RecipeCard({ recipes, baseURL }) {
         setShowUpdateRecipe(true);
     }
 
+    //-------------------------------------REFACTORED SHOW */
+    /*const [showRecipeDetails, setShowRecipeDetails] = useState(false);
+    const [selectedRecipe, setSelectedRecipe] = useState(null); // To store the clicked recipe details
     const handleShowRecipeDetails = (recipe) => {
         setSelectedRecipe(recipe);
         setShowRecipeDetails(true); // Open the modal
@@ -122,13 +163,16 @@ export default function RecipeCard({ recipes, baseURL }) {
 
     const handleCloseRecipeDetails = () => {
         setShowRecipeDetails(false); // Close the modal
-    };
+    };*/
+    //custom hook to show recipe details popup
+    const {
+        showRecipeDetails,
+        selectedRecipe,
+        handleShowRecipeDetails,
+        handleCloseRecipeDetails,
+    } = useRecipeDetailsPopup();
+    //-------------------------------------REFACTORED SHOW */
 
-
-    // Use useEffect to fetch recipes when the component mounts
-    useEffect(() => {
-        fetchRecipes();
-    }, []); // Empty dependency array means it runs only once on mount
 
     const addRecipe = async (e) => {
         e.preventDefault(); //prevent the browser from refreshing when handling a form
@@ -159,33 +203,7 @@ export default function RecipeCard({ recipes, baseURL }) {
         }
     };
 
-    /*const deleteRecipe = async () => {
-        //e.preventDefault(); //prevent the browser from refreshing when handling a form
 
-        if (recipeToDelete) {
-            try {
-                const response = await fetch(`${baseURL}/api/recipes/delete`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ recipe_title: recipeToDelete })
-                });
-
-                if (response.ok) {
-                    fetchRecipes();
-                } else {
-                    console.error('Failed to delete recipe');
-                }
-            }
-            catch (error) {
-                console.error('Error deleting recipe:', error);
-            }
-            finally {
-                handleCloseDelete();
-            }
-        }
-    };*/
 
     const updateRecipe = async (e) => {
         e.preventDefault(); //prevent the browser from refreshing when handling a form
@@ -220,9 +238,6 @@ export default function RecipeCard({ recipes, baseURL }) {
             handleCloseUpdateRecipe();
         }
     }
-
-
-
 
     return (
         <>
@@ -411,7 +426,12 @@ export default function RecipeCard({ recipes, baseURL }) {
             </Modal>
 
             {/**SHOW RECIPE Modal Pop UP */}
-            <Modal show={showRecipeDetails} onHide={handleCloseRecipeDetails}>
+            <RecipeDetailsPopup
+                show={showRecipeDetails}
+                onHide={handleCloseRecipeDetails}
+                recipe={selectedRecipe}
+            />
+            {/*<Modal show={showRecipeDetails} onHide={handleCloseRecipeDetails}>
                 <Modal.Header closeButton>
                     <Modal.Title>{selectedRecipe?.recipe_title}</Modal.Title>
                 </Modal.Header>
@@ -429,7 +449,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                         Close
                     </Button>
                 </Modal.Footer>
-            </Modal>
+            </Modal>*/}
 
         </>
     )
