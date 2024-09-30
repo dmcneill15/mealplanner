@@ -11,6 +11,10 @@ import DeletePopup from './DeletePopup';
 import { useDeletePopup } from '@/hooks/useDeletePopup';    //custom hook to handle delete popup
 import RecipeDetailsPopup from './RecipeDetailsPopup';
 import { useRecipeDetailsPopup } from '@/hooks/useRecipeDetailsPopup';
+import AddRecipePopup from './AddRecipePopup';
+import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
+import UpdateRecipePopup from './UpdateRecipePopup';
+import { useUpdateRecipePopup } from '@/hooks/useUpdateRecipePopup';
 
 import { EB_Garamond, Cinzel, Fauna_One } from 'next/font/google';
 
@@ -40,8 +44,6 @@ export default function RecipeCard({ recipes, baseURL }) {
 
     //const [recipeToDelete, setRecipeToDelete] = useState(null);
     //const [recipeTitle, setRecipeTitle] = useState(null);
-    const [recipeToUpdate, setRecipeToUpdate] = useState(null);
-    const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
 
 
     //add this function to refetch the data from the server once a delete/update/add has been performed
@@ -127,18 +129,57 @@ export default function RecipeCard({ recipes, baseURL }) {
 
     //-------------------------------------REFACTORED ADD */
     // State for new recipe
-    const [newRecipe, setNewRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
+    /*const [newRecipe, setNewRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
     const [showAddRecipe, setShowAddRecipe] = useState(false);
 
     const handleCloseAddRecipe = () => {
         setShowAddRecipe(false);
         setNewRecipe({ recipe_title: '', method: '', servings: '', image: '' }); // Reset input fields
     };
-    const handleShowAddRecipe = () => setShowAddRecipe(true);
+    const handleShowAddRecipe = () => setShowAddRecipe(true);*/
+
+    /* const addRecipe = async (e) => {
+         e.preventDefault(); //prevent the browser from refreshing when handling a form
+ 
+         const newRecipeWithId = {
+             ...newRecipe,
+             //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
+             user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now
+         };
+         try {
+             const response = await fetch(`${baseURL}/api/recipes/create`, {
+                 method: 'POST',
+                 headers: {
+                     'Content-Type': 'application/json'
+                 },
+                 body: JSON.stringify(newRecipeWithId)
+             });
+ 
+             if (response.ok) {
+                 fetchRecipes();
+             } else {
+                 console.error('Failed to add recipe');
+             }
+         } catch (error) {
+             console.error('Error adding recipe:', error);
+         } finally {
+             handleCloseAddRecipe();
+         }
+     };*/
     //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    const {
+        newRecipe,
+        setNewRecipe,
+        showAddRecipe,
+        handleCloseAddRecipe,
+        handleShowAddRecipe,
+        handleAddRecipe,
+    } = useAddRecipePopup(fetchRecipes);
     //-------------------------------------REFACTORED ADD */
 
-
+    //-------------------------------------REFACTORED UPDATE */
+  /* const [recipeToUpdate, setRecipeToUpdate] = useState(null);
+    const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
     // State for updated recipe
     const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
 
@@ -151,61 +192,9 @@ export default function RecipeCard({ recipes, baseURL }) {
         setRecipeToUpdate(recipe.recipe_title);
         setUpdatedRecipe({ recipe_title: recipe.recipe_title, method: recipe.method, servings: recipe.servings, image: recipe.image || '' });
         setShowUpdateRecipe(true);
-    }
+    }*/
 
-    //-------------------------------------REFACTORED SHOW */
-    /*const [showRecipeDetails, setShowRecipeDetails] = useState(false);
-    const [selectedRecipe, setSelectedRecipe] = useState(null); // To store the clicked recipe details
-    const handleShowRecipeDetails = (recipe) => {
-        setSelectedRecipe(recipe);
-        setShowRecipeDetails(true); // Open the modal
-    };
-
-    const handleCloseRecipeDetails = () => {
-        setShowRecipeDetails(false); // Close the modal
-    };*/
-    //custom hook to show recipe details popup
-    const {
-        showRecipeDetails,
-        selectedRecipe,
-        handleShowRecipeDetails,
-        handleCloseRecipeDetails,
-    } = useRecipeDetailsPopup();
-    //-------------------------------------REFACTORED SHOW */
-
-
-    const addRecipe = async (e) => {
-        e.preventDefault(); //prevent the browser from refreshing when handling a form
-
-        const newRecipeWithId = {
-            ...newRecipe,
-            //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
-            user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now
-        };
-        try {
-            const response = await fetch(`${baseURL}/api/recipes/create`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(newRecipeWithId)
-            });
-
-            if (response.ok) {
-                fetchRecipes();
-            } else {
-                console.error('Failed to add recipe');
-            }
-        } catch (error) {
-            console.error('Error adding recipe:', error);
-        } finally {
-            handleCloseAddRecipe();
-        }
-    };
-
-
-
-    const updateRecipe = async (e) => {
+/*    const handleUpdateRecipe = async (e) => {
         e.preventDefault(); //prevent the browser from refreshing when handling a form
 
         // Only send updated fields to db
@@ -237,7 +226,39 @@ export default function RecipeCard({ recipes, baseURL }) {
         } finally {
             handleCloseUpdateRecipe();
         }
-    }
+    }*/
+    //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    const {
+        recipeToUpdate,
+        showUpdateRecipe,
+        updatedRecipe,
+        handleCloseUpdateRecipe,
+        handleShowUpdateRecipe,
+        handleUpdateRecipe,
+        setUpdatedRecipe,
+    } = useUpdateRecipePopup (fetchRecipes);
+    //-------------------------------------REFACTORED UPDATE */
+
+
+    //-------------------------------------REFACTORED SHOW */
+    /*const [showRecipeDetails, setShowRecipeDetails] = useState(false);
+    const [selectedRecipe, setSelectedRecipe] = useState(null); // To store the clicked recipe details
+    const handleShowRecipeDetails = (recipe) => {
+        setSelectedRecipe(recipe);
+        setShowRecipeDetails(true); // Open the modal
+    };
+
+    const handleCloseRecipeDetails = () => {
+        setShowRecipeDetails(false); // Close the modal
+    };*/
+    //custom hook to show recipe details popup
+    const {
+        showRecipeDetails,
+        selectedRecipe,
+        handleShowRecipeDetails,
+        handleCloseRecipeDetails,
+    } = useRecipeDetailsPopup();
+    //-------------------------------------REFACTORED SHOW */
 
     return (
         <>
@@ -319,7 +340,14 @@ export default function RecipeCard({ recipes, baseURL }) {
             */}
 
             {/**ADD RECIPE Modal Pop UP */}
-            <Modal show={showAddRecipe} onHide={handleCloseAddRecipe}>
+            <AddRecipePopup
+                show={showAddRecipe}
+                onHide={handleCloseAddRecipe}
+                newRecipe={newRecipe}
+                setNewRecipe={setNewRecipe}
+                handleAddRecipe={handleAddRecipe}
+            />
+            {/*<Modal show={showAddRecipe} onHide={handleCloseAddRecipe}>
                 <Modal.Header closeButton>
                     <Modal.Title>Add a New Recipe</Modal.Title>
                 </Modal.Header>
@@ -363,16 +391,23 @@ export default function RecipeCard({ recipes, baseURL }) {
                                 value={newRecipe.image}
                                 onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
                             />
-                        </Form.Group>*/}
+                        </Form.Group>
                         <Button variant="outline-dark" type="submit" className="mt-3">
                             Add Recipe
                         </Button>
                     </Form>
                 </Modal.Body>
-            </Modal>
+            </Modal>*/}
 
             {/**UPDATE RECIPE Modal Pop UP */}
-            <Modal show={showUpdateRecipe} onHide={handleCloseUpdateRecipe}>
+            <UpdateRecipePopup
+                show={showUpdateRecipe}
+                onHide={handleCloseUpdateRecipe}
+                handleUpdateRecipe={handleUpdateRecipe}
+                updatedRecipe={updatedRecipe}
+                setUpdatedRecipe={setUpdatedRecipe}
+            />
+            {/*<Modal show={showUpdateRecipe} onHide={handleCloseUpdateRecipe}>
                 <Modal.Header closeButton>
                     <Modal.Title>Update Recipe</Modal.Title>
                 </Modal.Header>
@@ -409,7 +444,7 @@ export default function RecipeCard({ recipes, baseURL }) {
                             />
                         </Form.Group>
                         {/* Uncomment if you need to update the recipe image */}
-                        {/* <Form.Group controlId="formUpdateRecipeImage" className="mt-3">
+            {/* <Form.Group controlId="formUpdateRecipeImage" className="mt-3">
                         <Form.Label>Recipe Image URL</Form.Label>
                         <Form.Control
                             type="text"
@@ -417,13 +452,13 @@ export default function RecipeCard({ recipes, baseURL }) {
                             value={updatedRecipe.image}
                             onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, image: e.target.value })}
                         />
-                    </Form.Group> */}
+                    </Form.Group> 
                         <Button variant="outline-dark" type="submit" className="mt-3">
                             Update Recipe
                         </Button>
                     </Form>
                 </Modal.Body>
-            </Modal>
+            </Modal>*/}
 
             {/**SHOW RECIPE Modal Pop UP */}
             <RecipeDetailsPopup
