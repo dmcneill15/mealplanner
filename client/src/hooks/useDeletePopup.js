@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { deleteRecipe } from '../app/api/recipesApi';
+import { deleteRecipe, fetchRecipes } from '../app/api/recipesApi';
 
-export const useDeletePopup = (fetchRecipes, baseURL) => {
+export const useDeletePopup = (setCurrentRecipes) => {
     const [showDelete, setShowDelete] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState('');
     const [recipeTitle, setRecipeTitle] = useState('');
@@ -29,11 +29,12 @@ export const useDeletePopup = (fetchRecipes, baseURL) => {
 
         setIsDeleting(true);    
 
-        const result = await deleteRecipe(baseURL, recipeToDelete);
+        const result = await deleteRecipe(recipeToDelete);
         setIsDeleting(false);
 
         if (result.success) {
-            fetchRecipes();  // Re-fetch the recipes after successful delete
+            const updatedRecipes = await fetchRecipes();
+            setCurrentRecipes(updatedRecipes);
         } else {
             console.error('Failed to delete recipe');
         }

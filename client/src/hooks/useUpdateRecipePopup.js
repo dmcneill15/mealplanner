@@ -1,8 +1,8 @@
 import { useState } from 'react';
-import { updateRecipe } from '../app/api/recipesApi';
+import { updateRecipe, fetchRecipes } from '../app/api/recipesApi';
 
-export const useUpdateRecipePopup = (fetchRecipes) => {
-    const [recipeToUpdate, setRecipeToUpdate] = useState(null);
+export const useUpdateRecipePopup = (setCurrentRecipes) => {
+    const [recipeToUpdate, setRecipeToUpdate] = useState('');
     const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
     const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
 
@@ -34,7 +34,9 @@ export const useUpdateRecipePopup = (fetchRecipes) => {
 
         try {
             await updateRecipe(recipeToUpdate, recipeUpdates); // Call the API function
-            await fetchRecipes(); // Update recipe list after successful update
+            const updatedRecipes = await fetchRecipes();
+            setCurrentRecipes(updatedRecipes);
+
         } catch (error) {
             console.error('Error updating recipe:', error);
         } finally {

@@ -1,4 +1,19 @@
-export const deleteRecipe = async (baseURL, recipeTitle) => {
+export const fetchRecipes = async () => {
+    const baseURL = "http://localhost:8080"; // Define the base URL
+    try {
+        const response = await fetch(`${baseURL}/api/recipes`, { cache: 'no-cache' });
+        if (!response.ok) throw new Error('Failed to fetch recipes');
+        const result = await response.json();
+        const recipesArray = result.data;
+        return recipesArray;
+    } catch (error) {
+        console.error('Failed to fetch recipes:', error);
+        throw error; // Rethrow to handle in the component if needed
+    }
+};
+
+export const deleteRecipe = async (recipeTitle) => {
+    const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}/api/recipes/delete`, {
             method: 'DELETE',
@@ -64,7 +79,7 @@ export const updateRecipe = async (recipeToUpdate, recipeUpdates) => {
         });
 
         if (response.ok) {
-            return await response.json();
+            return response.json();
         } else {
             throw new Error('Failed to update recipe');
         }
