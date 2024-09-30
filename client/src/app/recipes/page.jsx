@@ -1,4 +1,5 @@
 import RecipeCard from '@/components/RecipeCard';
+
 //import recipesData from '@/data/recipes.js'
 
 // Import  font

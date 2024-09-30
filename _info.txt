@@ -16,3 +16,28 @@ my-project/
 ├── .gitignore             # Git ignore file
 ├── README.md              # Documentation
 └── package.json           # Monorepo (root) package.json for managing both client and server
+
+
+Refactor RecipeCard.jsx
+src/
+├── components/
+│   ├── RecipeCard.js
+│   ├── RecipeDetailsModal.js
+│   ├── RecipeList.js
+│   └── AddRecipeModal.js
+├── api/
+│   └── recipeApi.js
+├── pages/
+│   └── RecipesPage.js
+└── styles/
+    └── RecipeCard.module.css
+
+/src
+  /components
+    RecipeList.js        <-- The component that displays the list of recipes
+    RecipeCard.js        <-- Individual recipe card used by RecipeList
+    RecipeDetailsModal.js <-- Modal that displays details of a selected recipe
+  /pages
+    RecipesPage.js       <-- Main page where the RecipeList and modal are integrated
+  /data
+    recipes.js           <-- Optional: a file for storing static recipe data or managing API calls
