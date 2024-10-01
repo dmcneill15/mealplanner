@@ -5,6 +5,15 @@ const addRecipetToMealPlan = async (req, res) => {
     const { user_id, recipe_id, date, title } = req.body;
 
     try {
+        // Check for existing entry
+       /* const existingMealPlan = await MealPlan.findOne({ user_id, recipe_id, date });
+
+        if (existingMealPlan) {
+            // If an existing entry is found, return a conflict response
+            return res.status(409).json({ result: 409, message: 'This recipe is already added to your meal plan for this date.' });
+        }*/
+
+        // Create a new MealPlan entry
         const newMealPlan = new MealPlan({
             user_id,
             recipe_id,
@@ -12,6 +21,7 @@ const addRecipetToMealPlan = async (req, res) => {
             title
         });
 
+        // Save the new meal plan
         const savedMealPlan = await newMealPlan.save();
         res.status(200).json({ result: 200, data: savedMealPlan });
     } catch (err) {

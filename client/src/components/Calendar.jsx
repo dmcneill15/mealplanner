@@ -8,15 +8,17 @@ import { fetchRecipes } from '@/app/api/recipesApi';
 import { addRecipeToMealPlan, getUserMealPlan } from '@/app/api/mealplanApi';
 import { EventSourceInput } from '@fullcalendar/core/index.js'
 
-import { useState, useEffect, Fragment } from 'react'
+import { useState, useEffect, useRef } from 'react'
 
 export default function Calendar() {
 
-    const userId = "66f739adc717200fa34ac24b";
+    const userId = "66f739adc717200fa34ac24b";      //use hardcoded id for now
+
     const [events, setEvents] = useState([]);
-    const [allEvents, setAllEvents] = useState([])
-    const [showModal, setShowModal] = useState(false)
-    const [showDeleteModal, setShowDeleteModal] = useState(false)
+    const [allEvents, setAllEvents] = useState([]);
+
+    const [showModal, setShowModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
     //const [idToDelete, setIdToDelete] = useState(null)
     const [newEvent, setNewEvent] = useState({
         title: '',
@@ -25,49 +27,27 @@ export default function Calendar() {
         id: 0
     })
 
-    useEffect(() => {
-        const fetchMealPlan = async () => {
-            try {
-                const mealPlan = await getUserMealPlan(userId);
-                // Check if mealPlan.data exists and is an array
-                if (mealPlan.data && Array.isArray(mealPlan.data)) {
-                    const formattedEvents = mealPlan.data.map(item => ({
-                        title: item.recipe_id.recipe_title, // Access title directly from item
-                        id: item._id, // Access _id directly from item
-                        start: new Date(item.date), // Parse date to Date object
-                        allDay: true
-                    }));
-                    setAllEvents(formattedEvents);
-                    console.log('Formatted Events:', formattedEvents); // Log formatted events
-                } else {
-                    console.log('No meal plans found for this user.');
-                }
-            } catch (error) {
-                console.error('Error fetching meal plan:', error);
-            }
-        };
-        fetchMealPlan();
-    }, [userId]);
+    const draggableInitialized = useRef(false); // Track Draggable initialization
 
-    // Fetch recipes when the component mounts
+    // Fetch recipes when the component mounts to display list on the right hand side
     useEffect(() => {
         const getRecipes = async () => {
             try {
                 const recipes = await fetchRecipes();
                 const formattedEvents = recipes.map(recipe => ({
-                    title: recipe.recipe_title, // Assuming recipe has a 'name' property
-                    id: recipe.recipe_id, // Assuming recipe has an 'id' property
+                    title: recipe.recipe_title,
+                    id: recipe.recipe_id,
                 }));
                 setEvents(formattedEvents);
             } catch (error) {
                 console.error('Error fetching recipes:', error);
             }
         };
-
         getRecipes();
     }, []);
 
-    useEffect(() => {
+    //Initialize the drag and drop functionality of the recipes in the list
+    /*useEffect(() => {
         let draggableEl = document.getElementById('draggable-el')
         if (draggableEl) {
             new Draggable(draggableEl, {
@@ -80,7 +60,47 @@ export default function Calendar() {
                 }
             })
         }
-    }, [])
+    }, []);*/     // Only needs to run once
+    useEffect(() => {
+        if (!draggableInitialized.current) {
+            let draggableEl = document.getElementById('draggable-el');
+            if (draggableEl) {
+                new Draggable(draggableEl, {
+                    itemSelector: ".fc-event",
+                    eventData: function (eventEl) {
+                        let title = eventEl.getAttribute("title");
+                        let id = eventEl.getAttribute("data");
+                        return { title, id };
+                    }
+                });
+                draggableInitialized.current = true; // Mark as initialized
+            }
+        }
+    }, []);
+
+    // Fetch recipes to display in the calendar
+    useEffect(() => {
+        const fetchMealPlan = async () => {
+            try {
+                const mealPlan = await getUserMealPlan(userId);
+                // Check if mealPlan.data exists and is an array
+                if (mealPlan.data && Array.isArray(mealPlan.data)) {
+                    const formattedEvents = mealPlan.data.map(item => ({
+                        title: item.title,                  // Access title directly from item
+                        id: item._id,                       // Access _id directly from item
+                        start: new Date(item.date),         // Parse date to Date object
+                        allDay: true
+                    }));
+                    setAllEvents(formattedEvents);
+                } else {
+                    console.log('No meal plans found for this user.');
+                }
+            } catch (error) {
+                console.error('Error fetching meal plan:', error);
+            }
+        };
+        fetchMealPlan();
+    }, [userId]);
 
     function handleDateClick(arg) {
         setNewEvent({
@@ -92,10 +112,63 @@ export default function Calendar() {
         setShowModal(true);
     }
 
-    function addEvent(data) {
-        const event = { ...newEvent, start: data.date.toISOString(), title: data.draggedEl.innerText, allDay: data.allDay, id: new Date().getTime() }
-        setAllEvents([...allEvents, event])
+    async function addEvent(data) {
+        //console.log('Add Event Called!');
+
+        if (!data || !data.draggedEl) {
+            console.error('Invalid data structure:', data);
+            return;
+        }
+
+        const draggedEl = data.draggedEl;
+        const title = draggedEl.innerText;
+        const recipeId = draggedEl.getAttribute("data-id");
+
+        if (!recipeId) {
+            console.error('Recipe ID not found in dragged element:', draggedEl);
+            return;
+        }
+
+        const newMealPlanEntry = {
+            user_id: userId,
+            recipe_id: recipeId,
+            date: data.date.toISOString(),
+            title: title
+        };
+
+        try {
+            await addRecipeToMealPlan(newMealPlanEntry);
+            const newEvent = {
+                title: title,
+                start: data.date.toISOString(),
+                allDay: true,
+                id: recipeId
+            };
+
+            setAllEvents(prevEvents => [...prevEvents, newEvent]);
+        } catch (error) {
+            if (error.response && error.response.status === 409) {
+                alert(error.response.data.message);
+            } else {
+                console.error('Error adding recipe to meal plan:', error);
+            }
+        }
     }
+
+    const handleEventReceive = async (info) => {
+        //console.log('Handle Event Receive Called');
+        try {
+            const dropInfo = {
+                draggedEl: info.draggedEl,
+                date: info.event.start,
+            };
+
+            await addEvent(dropInfo);
+        } catch (error) {
+            console.error('Error during event receive:', error);
+            info.revert();
+        }
+    };
 
     /*function handleDeleteModal(data) {
         setShowDeleteModal(true);
@@ -120,12 +193,12 @@ export default function Calendar() {
         setIdToDelete(null)
     }
 */
-    const handleChange = (e) => {
+    /*const handleChange = (e) => {
         setNewEvent({
             ...newEvent,
             title: e.target.value
         })
-    }
+    }*/
 
     async function handleSubmit(e) {
         e.preventDefault();
@@ -167,13 +240,12 @@ export default function Calendar() {
                         plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
                         initialView="dayGridMonth"
                         events={allEvents}
-                        nowIndicator={true}
+                        //nowIndicator={true}
                         editable={true}
                         droppable={true}
                         selectable={true}
-                        selectMirror={true}
                         dateClick={handleDateClick}
-                        drop={(data) => addEvent(data)}
+                        eventReceive={handleEventReceive}
                         eventClick={(data) => handleDeleteModal(data)}
                     />
                     {/* Modal code for adding a new event */}
@@ -199,6 +271,7 @@ export default function Calendar() {
                         <div
                             className="fc-event border-2 p-1 m-2 w-full rounded-md ml-auto"
                             title={event.title}
+                            data-id={event.id}
                             key={event.id}
                             style={{ cursor: 'pointer' }}
                         >

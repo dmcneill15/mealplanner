@@ -1,7 +1,7 @@
 export const addRecipeToMealPlan = async (mealPlanData) => {
     const baseURL = "http://localhost:8080"; // Define the base URL
     try {
-        const response = await fetch(`${baseURL}/api/mealplan`, {
+        const response = await fetch(`${baseURL}/api/mealplan/add`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
