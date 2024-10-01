@@ -26,6 +26,8 @@ export const getUserMealPlan = async (user_id) => {
         const response = await fetch(`${baseURL}/api/mealplan/${user_id}`);
 
         if (response.ok) {
+            //console.log("response was ok");
+            //console.log(response);
             return response.json();
         } else {
             throw new Error('Failed to fetch meal plan');

@@ -12,7 +12,7 @@ import { useState, useEffect, Fragment } from 'react'
 
 export default function Calendar() {
 
-    const userId = "66f739adc717200fa34ac24c";
+    const userId = "66f739adc717200fa34ac24b";
     const [events, setEvents] = useState([]);
     const [allEvents, setAllEvents] = useState([])
     const [showModal, setShowModal] = useState(false)
@@ -25,23 +25,27 @@ export default function Calendar() {
         id: 0
     })
 
-    // Fetch user's meal plan when component mounts
     useEffect(() => {
         const fetchMealPlan = async () => {
             try {
                 const mealPlan = await getUserMealPlan(userId);
-                const formattedEvents = mealPlan.data.map(item => ({
-                    title: item.title,
-                    id: item.recipe_id._id,
-                    start: new Date(item.date),
-                    allDay: true
-                }));
-                setAllEvents(formattedEvents);
+                // Check if mealPlan.data exists and is an array
+                if (mealPlan.data && Array.isArray(mealPlan.data)) {
+                    const formattedEvents = mealPlan.data.map(item => ({
+                        title: item.recipe_id.recipe_title, // Access title directly from item
+                        id: item._id, // Access _id directly from item
+                        start: new Date(item.date), // Parse date to Date object
+                        allDay: true
+                    }));
+                    setAllEvents(formattedEvents);
+                    console.log('Formatted Events:', formattedEvents); // Log formatted events
+                } else {
+                    console.log('No meal plans found for this user.');
+                }
             } catch (error) {
                 console.error('Error fetching meal plan:', error);
             }
         };
-
         fetchMealPlan();
     }, [userId]);
 
