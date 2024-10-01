@@ -6,9 +6,18 @@ import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
 //import { useRecipes } from '@/hooks/useRecipes';
 import { fetchRecipes } from '@/app/api/recipesApi';
 import { addRecipeToMealPlan, getUserMealPlan } from '@/app/api/mealplanApi';
+import AddRecipePopup from './AddRecipePopup';
+import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { EventSourceInput } from '@fullcalendar/core/index.js'
 
 import { useState, useEffect, useRef } from 'react'
+
+import { EB_Garamond, Cinzel, Fauna_One } from 'next/font/google';
+const faunaOne = Fauna_One({
+    weight: ['400'],
+    style: ['normal'],
+    subsets: ['latin'],
+});
 
 export default function Calendar() {
 
@@ -16,6 +25,11 @@ export default function Calendar() {
 
     const [events, setEvents] = useState([]);
     const [allEvents, setAllEvents] = useState([]);
+
+    const [recipeList, setRecipeList] = useState([]);
+    const [recipeCalendar, setRecipeCalendar] = useState([]);
+    const [refresh, setRefresh] = useState(false);
+
 
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -29,38 +43,28 @@ export default function Calendar() {
 
     const draggableInitialized = useRef(false); // Track Draggable initialization
 
+
+    const forceRerender = () => {
+        setRefresh(prev => !prev);
+    };
+
     // Fetch recipes when the component mounts to display list on the right hand side
     useEffect(() => {
         const getRecipes = async () => {
             try {
                 const recipes = await fetchRecipes();
-                const formattedEvents = recipes.map(recipe => ({
+                const formattedRecipes = recipes.map(recipe => ({
                     title: recipe.recipe_title,
                     id: recipe.recipe_id,
-                }));
-                setEvents(formattedEvents);
+                })).sort((a, b) => a.title.localeCompare(b.title)); //Sort alphabetically
+                setRecipeList(formattedRecipes);
             } catch (error) {
                 console.error('Error fetching recipes:', error);
             }
         };
         getRecipes();
-    }, []);
+    }, [refresh]);
 
-    //Initialize the drag and drop functionality of the recipes in the list
-    /*useEffect(() => {
-        let draggableEl = document.getElementById('draggable-el')
-        if (draggableEl) {
-            new Draggable(draggableEl, {
-                itemSelector: ".fc-event",
-                eventData: function (eventEl) {
-                    let title = eventEl.getAttribute("title")
-                    let id = eventEl.getAttribute("data")
-                    let start = eventEl.getAttribute("start")
-                    return { title, id, start }
-                }
-            })
-        }
-    }, []);*/     // Only needs to run once
     useEffect(() => {
         if (!draggableInitialized.current) {
             let draggableEl = document.getElementById('draggable-el');
@@ -90,8 +94,8 @@ export default function Calendar() {
                         id: item._id,                       // Access _id directly from item
                         start: new Date(item.date),         // Parse date to Date object
                         allDay: true
-                    }));
-                    setAllEvents(formattedEvents);
+                    })).sort((a, b) => a.title.localeCompare(b.title)); //Sort alphabetically
+                    setRecipeCalendar(formattedEvents);
                 } else {
                     console.log('No meal plans found for this user.');
                 }
@@ -102,7 +106,7 @@ export default function Calendar() {
         fetchMealPlan();
     }, [userId]);
 
-    function handleDateClick(arg) {
+    /*function handleDateClick(arg) {
         setNewEvent({
             ...newEvent,
             start: arg.date,
@@ -110,7 +114,7 @@ export default function Calendar() {
             id: new Date().getTime()
         });
         setShowModal(true);
-    }
+    }*/
 
     async function addEvent(data) {
         //console.log('Add Event Called!');
@@ -145,7 +149,7 @@ export default function Calendar() {
                 id: recipeId
             };
 
-            setAllEvents(prevEvents => [...prevEvents, newEvent]);
+            setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 alert(error.response.data.message);
@@ -200,7 +204,7 @@ export default function Calendar() {
         })
     }*/
 
-    async function handleSubmit(e) {
+    /*async function handleSubmit(e) {
         e.preventDefault();
 
         try {
@@ -224,8 +228,18 @@ export default function Calendar() {
         } catch (error) {
             console.error('Error adding event to calendar:', error);
         }
-    }
+    }*/
 
+    //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    const {
+        newRecipe,
+        setNewRecipe,
+        showAddRecipe,
+        handleCloseAddRecipe,
+        handleShowAddRecipe,
+        handleAddRecipe,
+    } = useAddRecipePopup(setRecipeList, forceRerender);
+    //-------------------------------------REFACTORED ADD */
 
     return (
         <div style={styles.container}>
@@ -239,47 +253,45 @@ export default function Calendar() {
                         }}
                         plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
                         initialView="dayGridMonth"
-                        events={allEvents}
+                        events={recipeCalendar}
                         //nowIndicator={true}
                         editable={true}
                         droppable={true}
                         selectable={true}
-                        dateClick={handleDateClick}
+                        //dateClick={handleDateClick}
                         eventReceive={handleEventReceive}
-                        eventClick={(data) => handleDeleteModal(data)}
+                    //eventClick={(data) => handleDeleteModal(data)}
                     />
                     {/* Modal code for adding a new event */}
-                    {showModal && (
-                        <div>
-                            <form onSubmit={handleSubmit}>
-                                <input
-                                    type="text"
-                                    value={newEvent.title}
-                                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
-                                    placeholder="Recipe title"
-                                />
-                                <button type="submit">Add to Calendar</button>
-                            </form>
-                        </div>
-                    )}
                 </div>
             </div>
             <div style={styles.rightSide} id="draggable-el">
-                <h2 style={styles.heading}>Add Your Recipes</h2>
+                <h3 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h3>
+                <div className="center">
+                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + New Recipe</a>
+                </div>
                 <div style={{ ...styles.content, display: 'block' }} >
-                    {events.map(event => (
+                    {recipeList.map(recipe => (
                         <div
-                            className="fc-event border-2 p-1 m-2 w-full rounded-md ml-auto"
-                            title={event.title}
-                            data-id={event.id}
-                            key={event.id}
+                            className={`${faunaOne.className} fc-event border-2 p-1 m-2 w-full rounded-md ml-auto`}
+                            title={recipe.title}
+                            data-id={recipe.id}
+                            key={recipe.id}
                             style={{ cursor: 'pointer' }}
                         >
-                            {event.title}
+                            {recipe.title}
                         </div>
                     ))}
                 </div>
             </div>
+            {/**ADD RECIPE Modal Pop UP */}
+            <AddRecipePopup
+                show={showAddRecipe}
+                onHide={handleCloseAddRecipe}
+                newRecipe={newRecipe}
+                setNewRecipe={setNewRecipe}
+                handleAddRecipe={handleAddRecipe}
+            />
         </div>
     );
 };
@@ -323,14 +335,14 @@ const styles = {
         alignItems: 'center',
         color: 'black', // Text color for contrast
         border: '2px solid red',
-        fontSize: '24px',
-        fontWeight: 'bold',
+        //fontSize: '24px',
+        //fontWeight: 'bold',
         padding: '20px', // Optional padding for aesthetics
     },
     heading: {
         marginBottom: '20px', // Space below the heading
         textAlign: 'center', // Center the heading text
-        fontSize: '20px', // Adjust font size as needed
+        //fontSize: '20px', // Adjust font size as needed
     },
     content: {
         display: 'flex',

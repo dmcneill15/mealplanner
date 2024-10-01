@@ -35,7 +35,8 @@ export const useUpdateRecipePopup = (setCurrentRecipes) => {
         try {
             await updateRecipe(recipeToUpdate._id, recipeUpdates); // Call the API function
             const updatedRecipes = await fetchRecipes();
-            setCurrentRecipes(updatedRecipes);
+            const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
+            setCurrentRecipes([...sortedRecipes]);
 
         } catch (error) {
             console.error('Error updating recipe:', error);

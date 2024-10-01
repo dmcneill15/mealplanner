@@ -35,7 +35,8 @@ export const useDeletePopup = (setCurrentRecipes) => {
 
         if (result.success) {
             const updatedRecipes = await fetchRecipes();
-            setCurrentRecipes(updatedRecipes);
+            const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
+            setCurrentRecipes([...sortedRecipes]);
         } else {
             console.error(`Failed to delete recipe: ${recipe_title}`);
         }

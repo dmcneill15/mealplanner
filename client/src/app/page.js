@@ -1,5 +1,11 @@
 'use client'
-import 'bootstrap/dist/css/bootstrap.min.css';
+//import 'bootstrap/dist/css/bootstrap.min.css';
+/*import '@fullcalendar/common/main.css';
+import '@fullcalendar/daygrid/main.css';
+import '@fullcalendar/interaction/main.css';
+import '@fullcalendar/list/main.css';
+import "./globals.css";*/
+
 
 // Import  font
 import { EB_Garamond, Cinzel, Fauna_One, Montaga } from 'next/font/google';
