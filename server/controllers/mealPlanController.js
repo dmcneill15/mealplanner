@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import { Recipe, User, Category, MealPlan } from "../models/index.js"; // Adjust the path as necessary
 
 
-const getMealPlan = async (req, res) => {
+/*const getMealPlan = async (req, res) => {
     // Retrieves meal plans for a user within a specific date range
     try {
         const { user_id, startDate, endDate } = req.body;
@@ -24,7 +24,7 @@ const getMealPlan = async (req, res) => {
         console.log(err);
         res.send({ result: 500, error: err.message });
     }
-};
+};*/
 
 /*
 {
@@ -34,7 +34,7 @@ const getMealPlan = async (req, res) => {
 }
 */
 
-const createMealPlan = async (req, res) => {
+/*const createMealPlan = async (req, res) => {
     // Creates a new meal plan using JSON data POSTed in request body
     try {
         const { email_id, recipe_id, category_id, date } = req.body;
@@ -46,7 +46,7 @@ const createMealPlan = async (req, res) => {
 
         const user = await User.findOne({ email_id });
         /*const recipe = await Recipe.findById(recipe_id);
-        const category = await Category.findById(category_id);*/
+        const category = await Category.findById(category_id);
         const recipe = await Recipe.findOne({ recipe_id: recipe_id });
         const category = await Category.findOne({ category_id: category_id });
         console.log(user);
@@ -72,10 +72,42 @@ const createMealPlan = async (req, res) => {
         res.send({ result: 500, error: err.message });
     }
 };
+*/
 
+const addRecipetToMealPlan = async (req, res) => {
+    const { user_id, recipe_id, date, title } = req.body;
 
+    try {
+        const newMealPlan = new MealPlan({
+            user_id,
+            recipe_id,
+            date,
+            title
+        });
+
+        const savedMealPlan = await newMealPlan.save();
+        res.status(200).json({ result: 200, data: savedMealPlan });
+    } catch (err) {
+        console.error('Error saving to meal plan:', err);
+        res.status(500).json({ result: 500, error: 'Failed to add recipe to meal plan' });
+    }
+}
+
+//Question: why use req.params?
+//Does the find function work to get all the user recipes?
+const getUserMealPlan = async (req, res) => {
+    const { user_id } = req.params;
+
+    try {
+        const mealPlan = await MealPlan.find({ user_id }).populate('recipe_id');
+        res.status(200).json({ result: 200, data: mealPlan });
+    } catch (err) {
+        console.error('Error fetching meal plan:', err);
+        res.status(500).json({ result: 500, error: 'Failed to fetch meal plan' });
+    }
+}
 
 export {
-    createMealPlan,
-    getMealPlan,
+    addRecipetToMealPlan,
+    getUserMealPlan,
 };

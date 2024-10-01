@@ -5,29 +5,45 @@ import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
 //import { useRecipes } from '@/hooks/useRecipes';
 import { fetchRecipes } from '@/app/api/recipesApi';
+import { addRecipeToMealPlan, getUserMealPlan } from '@/app/api/mealplanApi';
 import { EventSourceInput } from '@fullcalendar/core/index.js'
 
 import { useState, useEffect, Fragment } from 'react'
 
 export default function Calendar() {
-    /*const [events, setEvents] = useState([
-        { title: 'event 1', id: '1' },
-        { title: 'event 2', id: '2' },
-        { title: 'event 3', id: '3' },
-        { title: 'event 4', id: '4' },
-        { title: 'event 5', id: '5' },
-    ])*/
+
+    const userId = "66f739adc717200fa34ac24c";
     const [events, setEvents] = useState([]);
     const [allEvents, setAllEvents] = useState([])
     const [showModal, setShowModal] = useState(false)
     const [showDeleteModal, setShowDeleteModal] = useState(false)
-    const [idToDelete, setIdToDelete] = useState(null)
+    //const [idToDelete, setIdToDelete] = useState(null)
     const [newEvent, setNewEvent] = useState({
         title: '',
         start: '',
         allDay: false,
         id: 0
     })
+
+    // Fetch user's meal plan when component mounts
+    useEffect(() => {
+        const fetchMealPlan = async () => {
+            try {
+                const mealPlan = await getUserMealPlan(userId);
+                const formattedEvents = mealPlan.data.map(item => ({
+                    title: item.title,
+                    id: item.recipe_id._id,
+                    start: new Date(item.date),
+                    allDay: true
+                }));
+                setAllEvents(formattedEvents);
+            } catch (error) {
+                console.error('Error fetching meal plan:', error);
+            }
+        };
+
+        fetchMealPlan();
+    }, [userId]);
 
     // Fetch recipes when the component mounts
     useEffect(() => {
@@ -62,9 +78,6 @@ export default function Calendar() {
         }
     }, [])
 
-
-
-
     function handleDateClick(arg) {
         setNewEvent({
             ...newEvent,
@@ -80,7 +93,7 @@ export default function Calendar() {
         setAllEvents([...allEvents, event])
     }
 
-    function handleDeleteModal(data) {
+    /*function handleDeleteModal(data) {
         setShowDeleteModal(true);
         setIdToDelete(Number(data.event.id));
     }
@@ -102,7 +115,7 @@ export default function Calendar() {
         setShowDeleteModal(false)
         setIdToDelete(null)
     }
-
+*/
     const handleChange = (e) => {
         setNewEvent({
             ...newEvent,
@@ -110,17 +123,32 @@ export default function Calendar() {
         })
     }
 
-    function handleSubmit(e) {
-        e.preventDefault()
-        setAllEvents([...allEvents, newEvent])
-        setShowModal(false)
-        setNewEvent({
-            title: '',
-            start: '',
-            allDay: false,
-            id: 0
-        })
+    async function handleSubmit(e) {
+        e.preventDefault();
+
+        try {
+            const mealPlanData = {
+                user_id: userId,
+                recipe_id: newEvent.id,
+                date: newEvent.start,
+                title: newEvent.title
+            };
+
+            await addRecipeToMealPlan(mealPlanData);
+
+            setAllEvents([...allEvents, newEvent]);
+            setShowModal(false);
+            setNewEvent({
+                title: '',
+                start: '',
+                allDay: false,
+                id: 0
+            });
+        } catch (error) {
+            console.error('Error adding event to calendar:', error);
+        }
     }
+
 
     return (
         <div style={styles.container}>
@@ -144,6 +172,20 @@ export default function Calendar() {
                         drop={(data) => addEvent(data)}
                         eventClick={(data) => handleDeleteModal(data)}
                     />
+                    {/* Modal code for adding a new event */}
+                    {showModal && (
+                        <div>
+                            <form onSubmit={handleSubmit}>
+                                <input
+                                    type="text"
+                                    value={newEvent.title}
+                                    onChange={(e) => setNewEvent({ ...newEvent, title: e.target.value })}
+                                    placeholder="Recipe title"
+                                />
+                                <button type="submit">Add to Calendar</button>
+                            </form>
+                        </div>
+                    )}
                 </div>
             </div>
             <div style={styles.rightSide} id="draggable-el">
