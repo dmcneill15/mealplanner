@@ -12,7 +12,7 @@ export const fetchRecipes = async () => {
     }
 };
 
-export const deleteRecipe = async (recipeTitle) => {
+/*export const deleteRecipe = async (recipeTitle) => {
     const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}/api/recipes/delete`, {
@@ -21,6 +21,28 @@ export const deleteRecipe = async (recipeTitle) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({ recipe_title: recipeTitle }),
+        });
+
+        if (response.ok) {
+            return { success: true };
+        } else {
+            console.error('Failed to delete recipe');
+            return { success: false };
+        }
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
+        return { success: false, error };
+    }
+};*/
+export const deleteRecipe = async (recipeId) => {
+    const baseURL = "http://localhost:8080"; // Define the base URL
+    try {
+        const response = await fetch(`${baseURL}/api/recipes/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ _id: recipeId }),
         });
 
         if (response.ok) {
@@ -64,7 +86,7 @@ export const addRecipe = async (newRecipe) => {
     }
 };
 
-export const updateRecipe = async (recipeToUpdate, recipeUpdates) => {
+export const updateRecipe = async (recipeToUpdateId, recipeUpdates) => {
     const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}/api/recipes/update`, {
@@ -73,7 +95,7 @@ export const updateRecipe = async (recipeToUpdate, recipeUpdates) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recipe_title: recipeToUpdate,
+                _id: recipeToUpdateId,
                 ...recipeUpdates,
             }),
         });

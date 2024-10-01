@@ -12,7 +12,7 @@ export const useUpdateRecipePopup = (setCurrentRecipes) => {
     };
 
     const handleShowUpdateRecipe = (recipe) => {
-        setRecipeToUpdate(recipe.recipe_title);
+        setRecipeToUpdate(recipe);
         setUpdatedRecipe({
             recipe_title: recipe.recipe_title,
             method: recipe.method,
@@ -33,7 +33,7 @@ export const useUpdateRecipePopup = (setCurrentRecipes) => {
         if (updatedRecipe.image) recipeUpdates.new_image = updatedRecipe.image;
 
         try {
-            await updateRecipe(recipeToUpdate, recipeUpdates); // Call the API function
+            await updateRecipe(recipeToUpdate._id, recipeUpdates); // Call the API function
             const updatedRecipes = await fetchRecipes();
             setCurrentRecipes(updatedRecipes);
 

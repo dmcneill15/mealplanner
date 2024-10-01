@@ -48,12 +48,15 @@ const createRecipe = async (req, res) => {
     }
 };
 
-//search for recipe based on title & delete
+//search for recipe based on _id
 const deleteRecipe = async (req, res) => {
-    const recipe = req.body;
+    const {_id} = req.body;
     //console.log(recipe);
+    if (!_id) {
+        return res.status(400).send({ result: 400, message: 'Recipe _id is required' });
+    }
 
-    Recipe.findOneAndDelete({ recipe_title: recipe.recipe_title })
+    Recipe.findByIdAndDelete({_id})
         .then(data => {
             if (data) {
                 res.send({ result: 200, data: data });
@@ -68,10 +71,10 @@ const deleteRecipe = async (req, res) => {
 };
 
 const updateRecipe = (req, res) => {
-    const { recipe_title, new_title, new_method, new_servings, new_image } = req.body;
+    const { _id, new_title, new_method, new_servings, new_image } = req.body;
 
     // First, check if the recipe exists
-    Recipe.findOne({ recipe_title })
+    Recipe.findById({ _id })
         .then(recipe => {
             if (!recipe) {
                 // Recipe not found
@@ -86,7 +89,7 @@ const updateRecipe = (req, res) => {
             if (new_image) updatedRecipe.image = new_image;
 
             // Update the recipe with only the changed fields
-            return Recipe.findOneAndUpdate({ recipe_title }, updatedRecipe, { new: true });
+            return Recipe.findByIdAndUpdate(_id, updatedRecipe, { new: true });
         })
         .then(updatedRecipe => {
             if (updatedRecipe) {

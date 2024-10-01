@@ -7,10 +7,10 @@ export const useDeletePopup = (setCurrentRecipes) => {
     const [recipeTitle, setRecipeTitle] = useState('');
     const [isDeleting, setIsDeleting] = useState(false);    //state can be used to give user feedback iof progress(spinning wheel)
 
-    const handleShowDelete = (recipeTitle) => {
-        setRecipeToDelete(recipeTitle);
-        setRecipeTitle(recipeTitle);
-        setShowDelete(true);
+    const handleShowDelete = (recipe) => {
+        setRecipeToDelete(recipe);    
+        setRecipeTitle(recipe.recipe_title);    //Title for display
+        setShowDelete(true);                    //Show the popup
     };
 
     const handleCloseDelete = () => {
@@ -25,18 +25,19 @@ export const useDeletePopup = (setCurrentRecipes) => {
     };
 
     const handleDelete = async () => {
-        if (!recipeTitle) return;
+        if (!recipeToDelete) return;
 
+        const { _id, recipe_title } = recipeToDelete;
         setIsDeleting(true);    
 
-        const result = await deleteRecipe(recipeToDelete);
+        const result = await deleteRecipe(_id);
         setIsDeleting(false);
 
         if (result.success) {
             const updatedRecipes = await fetchRecipes();
             setCurrentRecipes(updatedRecipes);
         } else {
-            console.error('Failed to delete recipe');
+            console.error(`Failed to delete recipe: ${recipe_title}`);
         }
 
         handleCloseDelete();  // Close the modal

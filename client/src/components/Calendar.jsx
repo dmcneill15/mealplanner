@@ -220,6 +220,10 @@ const styles = {
         height: '100%', // Fill the remaining space
     },
 };
+
+//https://github.com/NikValdez/NextJSCalendarTut/blob/main/app/page.tsx
+
+
 /*export default function Calendar({recipes}) {
     const baseURL = "http://localhost:8080";
 
