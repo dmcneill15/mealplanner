@@ -22,10 +22,6 @@ const faunaOne = Fauna_One({
 export default function Calendar() {
 
     const userId = "66f739adc717200fa34ac24b";      //use hardcoded id for now
-
-    const [events, setEvents] = useState([]);
-    const [allEvents, setAllEvents] = useState([]);
-
     const [recipeList, setRecipeList] = useState([]);
     const [recipeCalendar, setRecipeCalendar] = useState([]);
     const [refresh, setRefresh] = useState(false);
@@ -243,8 +239,8 @@ export default function Calendar() {
 
     return (
         <div style={styles.container}>
-            <div style={styles.leftSide}>
-                <div style={styles.calendarContainer}>
+            <div style={styles.leftSide} className={`${faunaOne.className}`}>
+                <div style={styles.calendarContainer} >
                     <FullCalendar
                         headerToolbar={{
                             left: 'today prev next',
@@ -266,7 +262,7 @@ export default function Calendar() {
                 </div>
             </div>
             <div style={styles.rightSide} id="draggable-el">
-                <h3 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h3>
+                <h4 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h4>
                 <div className="center">
                     <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + New Recipe</a>
                 </div>
@@ -308,8 +304,8 @@ const styles = {
         flexDirection: 'column', // Stack heading and calendar vertically
         justifyContent: 'flex-start', // Align items to the top
         alignItems: 'center',
-        border: '2px solid blue', // Blue border instead of background
-        padding: '20px', // Padding inside the border
+        //border: '2px solid blue', // Blue border instead of background
+        padding: '10px', // Padding inside the border
         borderRadius: '10px', // Optional: rounded corners for the border
     },
     calendarContainer: {
@@ -334,7 +330,7 @@ const styles = {
         justifyContent: 'flex-start', // Align items to the top
         alignItems: 'center',
         color: 'black', // Text color for contrast
-        border: '2px solid red',
+        //border: '2px solid red',
         //fontSize: '24px',
         //fontWeight: 'bold',
         padding: '20px', // Optional padding for aesthetics
