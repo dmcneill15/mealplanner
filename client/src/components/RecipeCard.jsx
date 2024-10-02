@@ -47,7 +47,9 @@ export default function RecipeCard({ recipes }) {
         const fetchData = async () => {
             try {
                 const recipesArray = await fetchRecipes(); // Call the API function
-                setCurrentRecipes(recipesArray); // Set the state with the fetched recipes
+                //const updatedRecipes = await fetchRecipes();
+                const sortedRecipes = recipesArray.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
+                setCurrentRecipes([...sortedRecipes]);
             } catch (error) {
                 console.error('Error loading recipes:', error);
             }

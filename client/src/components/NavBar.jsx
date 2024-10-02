@@ -39,7 +39,7 @@ function NavBar() {
             </header>
 
             <br></br>
-            <Navbar collapseOnSelect data-bs-theme="light" className="mb-3">
+            <Navbar collapseOnSelect data-bs-theme="light" className="mb-0">
                 <Container>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">

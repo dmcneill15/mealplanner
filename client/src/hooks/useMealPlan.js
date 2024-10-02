@@ -50,14 +50,15 @@ export function useMealPlan(userId) {
         };
 
         try {
-            await addRecipeToMealPlan(newMealPlanEntry);
+            const newRecipeEntry = await addRecipeToMealPlan(newMealPlanEntry);
             const newEvent = {
                 title: title,
                 start: date.toISOString(),
                 allDay: true,
-                id: recipeId
+                _id: newRecipeEntry._id,
+                key: newRecipeEntry._id
             };
-            setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
+            setRecipeCalendar(recipeCalendar => [...recipeCalendar, newEvent]);
         } catch (error) {
             if (error.response && error.response.status === 409) {
                 alert(error.response.data.message);
@@ -71,21 +72,21 @@ export function useMealPlan(userId) {
         const { event } = info;
         const mealPlanId = event.id;
         const date = event.start;
-    
+
         if (!mealPlanId) {
             console.error('Meal plan ID not found in event:', event);
             return;
         }
-    
+
         const updatedMealPlanEntry = {
             _id: mealPlanId,
             date: date.toISOString(),
         };
-    
+
         try {
             await updateRecipeInMealPlan(updatedMealPlanEntry); // Call the new API endpoint
-            setRecipeCalendar(prevEvents => 
-                prevEvents.map(event => 
+            setRecipeCalendar(prevEvents =>
+                prevEvents.map(event =>
                     event.id === mealPlanId ? { ...event, start: date.toISOString() } : event
                 )
             );

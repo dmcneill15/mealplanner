@@ -24,11 +24,12 @@ const faunaOne = Fauna_One({
 
 export default function Calendar() {
 
-    const userId = "66f739adc717200fa34ac24b";      //use hardcoded id for now
+    const userId = "66f739adc717200fa34ac24b";          //use hardcoded id for now
     const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
     const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
 
     const draggableInitialized = useRef(false); // Track Draggable initialization
+    const calendarRef = useRef(null);
 
     const forceRerender = () => {
         setRefresh(prev => !prev);
@@ -104,19 +105,20 @@ export default function Calendar() {
                 date: info.event.start, // Convert to UTC
             };
             await addEvent(dropInfo);
+            calendarRef.current.getApi().refetchEvents(); // Force calendar to refresh
         } catch (error) {
             console.error('Error during event receive:', error);
-            info.revert();
+            info.revert();  //used to maintain consistency should the event add operation fail
         }
     };
 
     const handleEventDrop = async (info) => {
-        console.log(`Info:${info}`);
         try {
             await updateEvent(info);
+            forceRerender();
         } catch (error) {
             console.error('Error during event drop:', error);
-            info.revert();
+            info.revert();      //used to maintain consistency should the event update operation fail. Event will default back to where it was.
         }
     };
 
@@ -133,6 +135,7 @@ export default function Calendar() {
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
                 <div style={styles.calendarContainer} >
                     <FullCalendar
+                    ref={calendarRef}
                         headerToolbar={{
                             left: 'today prev next',
                             center: 'title',

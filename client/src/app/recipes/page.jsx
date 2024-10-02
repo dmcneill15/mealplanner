@@ -33,7 +33,7 @@ export default async function Recipes() {
     return (
         <main>
             <section>
-                <div className="title-container">
+                <div className="title-container mb-4">
                     <h2 className={`${montega.className} title center`}>Your Recipe Catalog</h2>
                 </div>
             </section>
