@@ -5,7 +5,6 @@ import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
 //import { useRecipes } from '@/hooks/useRecipes';
 import { fetchRecipes } from '@/app/api/recipesApi';
-import { addRecipeToMealPlan, getUserMealPlan } from '@/app/api/mealplanApi';
 import AddRecipePopup from './AddRecipePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
@@ -27,109 +26,30 @@ export default function Calendar() {
     const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
     const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
 
-
-    const [showModal, setShowModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
-    //const [idToDelete, setIdToDelete] = useState(null)
-    const [newEvent, setNewEvent] = useState({
-        title: '',
-        start: '',
-        allDay: false,
-        id: 0
-    })
-
     const draggableInitialized = useRef(false); // Track Draggable initialization
-
-    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN
-    //const [recipeCalendar, setRecipeCalendar] = useState([]);
-    // Fetch recipes to display in the calendar
-    /*useEffect(() => {
-        const fetchMealPlan = async () => {
-            try {
-                const mealPlan = await getUserMealPlan(userId);
-                // Check if mealPlan.data exists and is an array
-                if (mealPlan.data && Array.isArray(mealPlan.data)) {
-                    const formattedEvents = mealPlan.data.map(item => ({
-                        title: item.title,                  // Access title directly from item
-                        id: item._id,                       // Access _id directly from item
-                        start: new Date(item.date),         // Parse date to Date object
-                        allDay: true
-                    })).sort((a, b) => a.title.localeCompare(b.title)); //Sort alphabetically
-                    setRecipeCalendar(formattedEvents);
-                } else {
-                    console.log('No meal plans found for this user.');
-                }
-            } catch (error) {
-                console.error('Error fetching meal plan:', error);
-            }
-        };
-        fetchMealPlan();
-    }, [userId]);*/
-    /*async function addEvent(data) {
-        if (!data || !data.draggedEl) {
-            console.error('Invalid data structure:', data);
-            return;
-        }
-
-        const { draggedEl, date } = data;
-        const title = draggedEl.innerText;
-        const recipeId = draggedEl.getAttribute("data-id");
-
-        if (!recipeId) {
-            console.error('Recipe ID not found in dragged element:', draggedEl);
-            return;
-        }
-
-        const newMealPlanEntry = createMealPlanEntry(userId, recipeId, date, title);
-
-        try {
-            await addRecipeToMealPlan(newMealPlanEntry);
-            const newEvent = createNewEvent(title, date, recipeId);
-            updateRecipeCalendar(newEvent);
-        } catch (error) {
-            handleAddEventError(error);
-        }
-    }
-
-    function createMealPlanEntry(userId, recipeId, date, title) {
-        return {
-            user_id: userId,
-            recipe_id: recipeId,
-            date: date.toISOString(),
-            title: title
-        };
-    }
-
-    function createNewEvent(title, date, recipeId) {
-        return {
-            title: title,
-            start: date.toISOString(),
-            allDay: true,
-            id: recipeId
-        };
-    }
-
-    function updateRecipeCalendar(newEvent) {
-        setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
-    }
-
-    function handleAddEventError(error) {
-        if (error.response && error.response.status === 409) {
-            alert(error.response.data.message);
-        } else {
-            console.error('Error adding recipe to meal plan:', error);
-        }
-    }*/
-    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN - to a custom hook - able to use this hook in other components */
-    const {
-        recipeCalendar,
-        addEvent
-    } = useMealPlan(userId);
 
     const forceRerender = () => {
         setRefresh(prev => !prev);
     };
+
+    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN - to a custom hook - able to use this hook in other components */
+    const {
+        recipeCalendar,
+        addEvent,
+        updateEvent
+    } = useMealPlan(userId);
     //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN
+
+    //-------------------------------------REFACTORED ADD RECIPE TO RECIPE CATALOG- to a custom hook - able to use this hook in other components */
+    const {
+        newRecipe,
+        setNewRecipe,
+        showAddRecipe,
+        handleCloseAddRecipe,
+        handleShowAddRecipe,
+        handleAddRecipe,
+    } = useAddRecipePopup(setRecipeList, forceRerender);
+    //-------------------------------------REFACTORED ADD */
 
     // Fetch recipes when the component mounts to display list on the right hand side
     useEffect(() => {
@@ -165,26 +85,12 @@ export default function Calendar() {
         }
     }, []);
 
-
-
-    /*function handleDateClick(arg) {
-        setNewEvent({
-            ...newEvent,
-            start: arg.date,
-            allDay: arg.allDay,
-            id: new Date().getTime()
-        });
-        setShowModal(true);
-    }*/
-
     const handleEventReceive = async (info) => {
-        //console.log('Handle Event Receive Called');
         try {
             const dropInfo = {
                 draggedEl: info.draggedEl,
-                date: info.event.start,
+                date: info.event.start, // Convert to UTC
             };
-
             await addEvent(dropInfo);
         } catch (error) {
             console.error('Error during event receive:', error);
@@ -192,72 +98,15 @@ export default function Calendar() {
         }
     };
 
-    /*function handleDeleteModal(data) {
-        setShowDeleteModal(true);
-        setIdToDelete(Number(data.event.id));
-    }
-
-    function handleDelete() {
-        setAllEvents(allEvents.filter(event => Number(event.id) !== Number(idToDelete)))
-        setShowDeleteModal(false)
-        setIdToDelete(null)
-    }
-
-    function handleCloseModal() {
-        setShowModal(false)
-        setNewEvent({
-            title: '',
-            start: '',
-            allDay: false,
-            id: 0
-        })
-        setShowDeleteModal(false)
-        setIdToDelete(null)
-    }
-*/
-    /*const handleChange = (e) => {
-        setNewEvent({
-            ...newEvent,
-            title: e.target.value
-        })
-    }*/
-
-    /*async function handleSubmit(e) {
-        e.preventDefault();
-
+    const handleEventDrop = async (info) => {
+        console.log(`Info:${info}`);
         try {
-            const mealPlanData = {
-                user_id: userId,
-                recipe_id: newEvent.id,
-                date: newEvent.start,
-                title: newEvent.title
-            };
-
-            await addRecipeToMealPlan(mealPlanData);
-
-            setAllEvents([...allEvents, newEvent]);
-            setShowModal(false);
-            setNewEvent({
-                title: '',
-                start: '',
-                allDay: false,
-                id: 0
-            });
+            await updateEvent(info);
         } catch (error) {
-            console.error('Error adding event to calendar:', error);
+            console.error('Error during event drop:', error);
+            info.revert();
         }
-    }*/
-
-    //-------------------------------------REFACTORED ADD RECIPE TO RECIPE CATALOG- to a custom hook - able to use this hook in other components */
-    const {
-        newRecipe,
-        setNewRecipe,
-        showAddRecipe,
-        handleCloseAddRecipe,
-        handleShowAddRecipe,
-        handleAddRecipe,
-    } = useAddRecipePopup(setRecipeList, forceRerender);
-    //-------------------------------------REFACTORED ADD */
+    };
 
     return (
         <div style={styles.container}>
@@ -271,16 +120,16 @@ export default function Calendar() {
                         }}
                         plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
                         initialView="dayGridMonth"
+                        timeZone="local"
                         events={recipeCalendar}
                         //nowIndicator={true}
                         editable={true}
                         droppable={true}
                         selectable={true}
                         //dateClick={handleDateClick}
-                        eventReceive={handleEventReceive}
-                    //eventClick={(data) => handleDeleteModal(data)}
+                        eventReceive={handleEventReceive}   //handles when external recipe is added
+                        eventDrop={handleEventDrop}         //handles when exisiting recipe is moved
                     />
-                    {/* Modal code for adding a new event */}
                 </div>
             </div>
             <div style={styles.rightSide} id="draggable-el">

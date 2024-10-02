@@ -13,4 +13,9 @@ router.get('/:user_id', (req, res) => {
     mealPlanController.getUserMealPlan(req, res);
 });
 
+// Update recipe date in a meal plan
+router.put('/update', (req, res) => {
+    mealPlanController.updateRecipeInMealPlan(req, res);
+});
+
 export default router;

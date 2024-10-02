@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { addRecipeToMealPlan, getUserMealPlan } from '../app/api/mealplanApi';
+import { addRecipeToMealPlan, getUserMealPlan, updateRecipeInMealPlan } from '../app/api/mealplanApi';
 
 
 export function useMealPlan(userId) {
@@ -67,5 +67,65 @@ export function useMealPlan(userId) {
         }
     };
 
-    return { recipeCalendar, addEvent };
+ /*   const updateEvent = async (data) => {
+        console.log(`Data: ${data}`);
+        if (!data || !data.draggedEl) {
+            console.error('Invalid data structure:', data);
+            return;
+        }
+    
+        const { draggedEl, date } = data;
+        const mealPlanId = draggedEl.getAttribute("data-mealplan-id");
+    
+        if (!mealPlanId) {
+            console.error('Meal plan ID not found in dragged element:', draggedEl);
+            return;
+        }
+    
+        const updatedMealPlanEntry = {
+            _id: mealPlanId,
+            date: date.toISOString(),
+        };
+    
+        try {
+            await updateRecipeInMealPlan(updatedMealPlanEntry); // Call the new API endpoint
+            setRecipeCalendar(prevEvents => 
+                prevEvents.map(event => 
+                    event.id === mealPlanId ? { ...event, start: date.toISOString() } : event
+                )
+            );
+        } catch (error) {
+            console.error('Error updating recipe in meal plan:', error);
+        }
+    };*/
+    const updateEvent = async (info) => {
+        const { event } = info;
+        const mealPlanId = event.id;
+        const date = event.start;
+    
+        if (!mealPlanId) {
+            console.error('Meal plan ID not found in event:', event);
+            return;
+        }
+    
+        const updatedMealPlanEntry = {
+            _id: mealPlanId,
+            date: date.toISOString(),
+        };
+    
+        try {
+            await updateRecipeInMealPlan(updatedMealPlanEntry); // Call the new API endpoint
+            setRecipeCalendar(prevEvents => 
+                prevEvents.map(evt => 
+                    evt.id === mealPlanId ? { ...evt, start: date.toISOString() } : evt
+                )
+            );
+        } catch (error) {
+            console.error('Error updating recipe in meal plan:', error);
+        }
+    };
+
+    return { recipeCalendar, addEvent, updateEvent };
 }
+
+

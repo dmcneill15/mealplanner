@@ -43,7 +43,30 @@ const getUserMealPlan = async (req, res) => {
     }
 }
 
+const updateRecipeInMealPlan = async (req, res) => {
+    const { _id, date } = req.body;
+
+    try {
+        const updatedMealPlan = await MealPlan.findByIdAndUpdate(
+            _id,
+            { date: date },
+            { new: true }
+        );
+
+        if (!updatedMealPlan) {
+            return res.status(404).json({ result: 404, message: 'Meal plan entry not found' });
+        }
+
+        res.status(200).json({ result: 200, data: updatedMealPlan });
+    } catch (err) {
+        console.error('Error updating meal plan:', err);
+        res.status(500).json({ result: 500, error: 'Failed to update meal plan' });
+    }
+};
+
+
 export {
     addRecipetToMealPlan,
     getUserMealPlan,
+    updateRecipeInMealPlan
 };
