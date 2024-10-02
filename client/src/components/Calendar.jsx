@@ -10,6 +10,9 @@ import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
 import { useDeletePopup } from '@/hooks/useDeletePopup';
 import Tooltip from '@mui/material/Tooltip';
+import SearchIcon from '@mui/icons-material/Search';
+import AddIcon from '@mui/icons-material/Add';
+import { Modal, Button, Form } from 'react-bootstrap';
 
 
 import { useState, useEffect, useRef } from 'react'
@@ -134,7 +137,7 @@ export default function Calendar() {
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
                 <div style={styles.calendarContainer} >
                     <FullCalendar
-                    ref={calendarRef}
+                        ref={calendarRef}
                         headerToolbar={{
                             left: 'today prev next',
                             center: 'title',
@@ -157,9 +160,23 @@ export default function Calendar() {
             </div>
             <div style={styles.rightSide} id="draggable-el" className='me-3'>
                 <h4 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h4>
-                <div className="center">
-                <Tooltip title="Create New Recipe" arrow>
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + </a>
+                <div className="center mb-2">
+                    <Form className="d-flex me-2" size="sm">
+                        <Form.Control
+                            type="search"
+                            placeholder="Search"
+                            className="me-2"
+                            aria-label="Search"
+
+                        />
+                        <Tooltip title="Search" arrow>
+                            <Button variant="outline-dark"><SearchIcon className='custom-icon footer-icon-size' /></Button>
+                        </Tooltip>
+                    </Form>
+                    <Tooltip title="Create New Recipe" arrow>
+                        <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
+                            <Button variant="outline-dark"><AddIcon className='custom-icon footer-icon-size' /></Button>
+                        </a>
                     </Tooltip>
                 </div>
                 <div style={{ ...styles.content, display: 'block' }} className='center border border-secondary rounded-3'>
