@@ -30,16 +30,14 @@ const montega = Montaga({
 });
 
 export default async function Recipes() {
-    const baseURL = "http://localhost:8080"; // Define the base URL
-
     return (
         <main>
             <section>
-                <div className="title-container">
+                <div className="title-container mb-4">
                     <h2 className={`${montega.className} title center`}>Your Recipe Catalog</h2>
                 </div>
             </section>
-            <RecipeCard baseURL={baseURL} />
+            <RecipeCard />
         </main>
     )
 }

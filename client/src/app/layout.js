@@ -1,3 +1,8 @@
+import 'bootstrap/dist/css/bootstrap.min.css';
+/*import '@fullcalendar/core/main.css';
+import '@fullcalendar/daygrid/main.css';
+import '@fullcalendar/interaction/main.css';
+import '@fullcalendar/list/main.css';*/
 import "./globals.css";
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'

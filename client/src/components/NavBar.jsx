@@ -1,5 +1,4 @@
 'use client' // client component, not server rendered
-import "../app/globals.css";
 import { usePathname } from 'next/navigation'
 import Image from "next/image";
 import Container from 'react-bootstrap/Container';
@@ -40,7 +39,7 @@ function NavBar() {
             </header>
 
             <br></br>
-            <Navbar collapseOnSelect bg="" data-bs-theme="light" className="mb-3">
+            <Navbar collapseOnSelect data-bs-theme="light" className="mb-0">
                 <Container>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">

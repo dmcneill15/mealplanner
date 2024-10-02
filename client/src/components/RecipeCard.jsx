@@ -47,7 +47,9 @@ export default function RecipeCard({ recipes }) {
         const fetchData = async () => {
             try {
                 const recipesArray = await fetchRecipes(); // Call the API function
-                setCurrentRecipes(recipesArray); // Set the state with the fetched recipes
+                //const updatedRecipes = await fetchRecipes();
+                const sortedRecipes = recipesArray.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
+                setCurrentRecipes([...sortedRecipes]);
             } catch (error) {
                 console.error('Error loading recipes:', error);
             }
@@ -60,11 +62,11 @@ export default function RecipeCard({ recipes }) {
     // Use the custom hook, passing the fetchRecipes function
     const {
         showDelete,         //Hook returns the state of the modal popup - visible or not
+        recipeToDelete,
         recipeTitle,        //Hook returns the title of the recipe to delete
         isDeleting,         //Hook returns the state of the deleting function
         handleShowDelete,   //Hook returns the function to trigger displaying the modal
         handleCloseDelete,  //Hook returns the function to handle closing the modal
-        onDeleteSuccess,    //Hook returns the function to handle a successful delete - refetching the recipes
         handleDelete,       //Hook returns the function to handle the api calls to delete the recipe 
     } = useDeletePopup(setCurrentRecipes);  // Pass fetchRecipes to the hook
     //-------------------------------------REFACTORED DELETE */
@@ -147,7 +149,7 @@ export default function RecipeCard({ recipes }) {
                                     </Tooltip>
                                     <Tooltip title="Delete Recipe" arrow>
                                         <a className="btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button" href="#!" role="button"
-                                            onClick={() => handleShowDelete(recipe.recipe_title)}>
+                                            onClick={() => handleShowDelete(recipe)}>
                                             <DeleteForeverIcon className='custom-icon' /></a>
                                     </Tooltip>
                                 </Card.Body>
@@ -161,7 +163,7 @@ export default function RecipeCard({ recipes }) {
             <DeletePopup
                 show={showDelete}
                 onHide={handleCloseDelete}
-                recipeTitle={recipeTitle}
+                recipeTitle={recipeToDelete?.recipe_title}
                 handleDelete={handleDelete}
                 isDeleting={isDeleting}
             />

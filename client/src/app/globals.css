@@ -30,11 +30,6 @@ body {
   margin: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
@@ -45,6 +40,7 @@ a {
   display: flex;
   justify-content: center;
 }
+
 
 .icon-button:hover {
   background-color: #343a40; /* Dark background on hover */
@@ -59,14 +55,51 @@ a {
   font-size:20px !important;
 }
 
+/* Calendar Styles */
+.fc {
+  color: black !important; /* Set all text in the calendar to black */
+}
 
-/*change the formatting of the calendar buttons*/
+.fc-daygrid-event {
+  text-decoration: none !important; /* Remove underline from event text */
+  color: black !important; /* Ensure event text color is black */
+}
+
+.fc-daygrid-event a {
+  color: black !important; /* Set link color to black */
+  text-decoration: none !important; /* Ensure no underline for links */
+}
+
+/* Calendar Button Styles */
 .fc-button {
-  background-color: white !important; /* Green background */
-  color: black !important; /* White text */
+  background-color: white !important; /* White background */
+  color: black !important; /* Black text */
   border: none; /* No borders */
 }
 
 .fc-button:hover {
-  background-color: #45a049; /* Darker green on hover */
+  background-color: black !important; /* Darker green on hover */
+  color:white !important;; 
+}
+
+.fc-h-event {
+  background-color: white;
+  color: black;
+  /*border: 1px solid var(--fc-event-border-color);*/
+  border: 1px solid black;
+  display: block;
+}
+
+.fc-event-title{
+  color: black;
+}
+
+.fc-col-header-cell-cushion{
+  color:black;
+  text-decoration: none;
+}
+
+.fc-daygrid-day-number{
+  color:black;
+  text-decoration: none;
 }

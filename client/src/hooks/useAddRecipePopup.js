@@ -17,7 +17,7 @@ export const useAddRecipePopup = (setCurrentRecipes) => {
         e.preventDefault(); // Prevent the browser from refreshing when handling the form
 
         try {
-            const addedRecipe = await addRecipe(newRecipe);
+            await addRecipe(newRecipe);
             const updatedRecipes = await fetchRecipes();
             setCurrentRecipes(updatedRecipes);
         } catch (error) {

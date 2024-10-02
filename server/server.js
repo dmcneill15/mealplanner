@@ -19,7 +19,7 @@ app.use(bodyParser.json()); // Add this line to parse JSON bodies
 
 app.use('/api/users', userRoutes);
 app.use('/api/recipes', recipeRoutes);
-app.use('/api/mealplans', mealPlanRoutes); 
+app.use('/api/mealplan', mealPlanRoutes); 
 app.use('/api/category', categoryRoutes);
 
 // set port, listen for requests

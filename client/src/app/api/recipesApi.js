@@ -12,7 +12,7 @@ export const fetchRecipes = async () => {
     }
 };
 
-export const deleteRecipe = async (recipeTitle) => {
+export const deleteRecipe = async (recipeId) => {
     const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}/api/recipes/delete`, {
@@ -20,7 +20,7 @@ export const deleteRecipe = async (recipeTitle) => {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ recipe_title: recipeTitle }),
+            body: JSON.stringify({ _id: recipeId }),
         });
 
         if (response.ok) {
@@ -64,7 +64,7 @@ export const addRecipe = async (newRecipe) => {
     }
 };
 
-export const updateRecipe = async (recipeToUpdate, recipeUpdates) => {
+export const updateRecipe = async (recipeToUpdateId, recipeUpdates) => {
     const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}/api/recipes/update`, {
@@ -73,7 +73,7 @@ export const updateRecipe = async (recipeToUpdate, recipeUpdates) => {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify({
-                recipe_title: recipeToUpdate,
+                _id: recipeToUpdateId,
                 ...recipeUpdates,
             }),
         });
