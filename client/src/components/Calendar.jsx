@@ -3,14 +3,15 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
-//import { useRecipes } from '@/hooks/useRecipes';
 import { fetchRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from './AddRecipePopup';
 import DeletePopup from './DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
 import { useDeletePopup } from '@/hooks/useDeletePopup';
-import { EventSourceInput } from '@fullcalendar/core/index.js'
+import Tooltip from '@mui/material/Tooltip';
+import AddIcon from '@mui/icons-material/Add';
+import { Button, Form } from 'react-bootstrap';
 
 
 import { useState, useEffect, useRef } from 'react'
@@ -27,8 +28,9 @@ export default function Calendar() {
     const userId = "66f739adc717200fa34ac24b";          //use hardcoded id for now
     const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
     const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
+    const [searchQuery, setSearchQuery] = useState(''); //state for search query
 
-    const draggableInitialized = useRef(false); // Track Draggable initialization
+    const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
 
     const forceRerender = () => {
@@ -130,12 +132,18 @@ export default function Calendar() {
         handleShowDeleteMealPlanEntry(recipe);
     };
 
+    //filter recipes based on search query 
+    const filteredRecipes = recipeList.filter(recipe =>
+        recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
                 <div style={styles.calendarContainer} >
                     <FullCalendar
-                    ref={calendarRef}
+                        ref={calendarRef}
                         headerToolbar={{
                             left: 'today prev next',
                             center: 'title',
@@ -156,15 +164,29 @@ export default function Calendar() {
                     />
                 </div>
             </div>
-            <div style={styles.rightSide} id="draggable-el">
+            <div style={styles.rightSide} id="draggable-el" className='me-3'>
                 <h4 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h4>
-                <div className="center">
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + New Recipe</a>
+                <div className="center mb-2">
+                    <Form className="d-flex me-2" size="sm">
+                        <Form.Control
+                            type="search"
+                            placeholder="Search"
+                            className="me-2"
+                            aria-label="Search"
+                            value={searchQuery}
+                            onChange={(e)=> setSearchQuery(e.target.value)}
+                        />
+                    </Form>
+                    <Tooltip title="Create New Recipe" arrow>
+                        <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
+                            <Button variant="outline-dark"><AddIcon className='custom-icon footer-icon-size' /></Button>
+                        </a>
+                    </Tooltip>
                 </div>
-                <div style={{ ...styles.content, display: 'block' }} >
-                    {recipeList.map(recipe => (
+                <div style={{ ...styles.content, display: 'block' }} className='center border border-secondary rounded-3'>
+                    {filteredRecipes.map(recipe => (
                         <div
-                            className={`${faunaOne.className} fc-event border-2 p-1 m-2 w-full rounded-md ml-auto`}
+                            className={`${faunaOne.className} fc-event center border-2 p-1 m-2 w-full rounded-md ml-auto`}
                             title={recipe.title}
                             data-id={recipe.id}
                             key={recipe.id}
@@ -197,7 +219,7 @@ export default function Calendar() {
 const styles = {
     container: {
         display: 'flex',
-        height: '100vh', // Full viewport height
+        //height: '100vh', // Full viewport height
         margin: '0 20px', // Equal margin on left and right
     },
     leftSide: {
@@ -246,7 +268,10 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100%', // Fill the remaining space
+        //border: '2px solid red',
+        //height: '100%', // Fill the remaining space
+        maxHeight: '500px', /* Adjust the height as needed to make a scrollable list*/
+        overflowY: 'auto',
     },
 };
 
