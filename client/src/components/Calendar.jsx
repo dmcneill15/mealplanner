@@ -29,6 +29,7 @@ export default function Calendar() {
     const userId = "66f739adc717200fa34ac24b";          //use hardcoded id for now
     const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
     const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
+    const [searchQuery, setSearchQuery] = useState(''); //state for search query
 
     const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
@@ -132,6 +133,12 @@ export default function Calendar() {
         handleShowDeleteMealPlanEntry(recipe);
     };
 
+    //filter recipes based on search query 
+    const filteredRecipes = recipeList.filter(recipe =>
+        recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
+
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
@@ -167,11 +174,9 @@ export default function Calendar() {
                             placeholder="Search"
                             className="me-2"
                             aria-label="Search"
-
+                            value={searchQuery}
+                            onChange={(e)=> setSearchQuery(e.target.value)}
                         />
-                        <Tooltip title="Search" arrow>
-                            <Button variant="outline-dark"><SearchIcon className='custom-icon footer-icon-size' /></Button>
-                        </Tooltip>
                     </Form>
                     <Tooltip title="Create New Recipe" arrow>
                         <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
@@ -180,7 +185,7 @@ export default function Calendar() {
                     </Tooltip>
                 </div>
                 <div style={{ ...styles.content, display: 'block' }} className='center border border-secondary rounded-3'>
-                    {recipeList.map(recipe => (
+                    {filteredRecipes.map(recipe => (
                         <div
                             className={`${faunaOne.className} fc-event center border-2 p-1 m-2 w-full rounded-md ml-auto`}
                             title={recipe.title}
