@@ -1,7 +1,7 @@
 'use client' // client component, not server rendered
 import { useState, useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { Card, Col, Row, Container, Modal, Button, Form } from 'react-bootstrap';
+import { Card, Col, Row, Container, Button, Form } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -41,7 +41,8 @@ const faunaOne = Fauna_One({
 //Recipe card takes delete function as a prop which is actioned on the delete icon press
 export default function RecipeCard({ recipes }) {
     const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    //set initial state to recipes passed in or set to empty if no recipe data
-    
+    const [searchQuery, setSearchQuery] = useState('');                     //state for search query
+
     // Use useEffect to fetch recipes when the component mounts
     useEffect(() => {
         const fetchData = async () => {
@@ -104,6 +105,11 @@ export default function RecipeCard({ recipes }) {
     } = useRecipeDetailsPopup();
     //-------------------------------------REFACTORED SHOW */
 
+    //filter recipes based on search query 
+    const filteredRecipes = currentRecipes.filter(recipe =>
+        recipe.recipe_title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
     return (
         <>
             {currentRecipes.length === 0 ? (
@@ -118,13 +124,25 @@ export default function RecipeCard({ recipes }) {
                     </div>
                 </Container>
             ) : (
-                <div className="center">
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + Add Recipe</a>
+                <div className="center mb-3">
+                    <Form className="d-flex me-2" size="sm">
+                        <Form.Control
+                            type="search"
+                            placeholder="Search"
+                            className="me-2 no-outline"
+                            aria-label="Search"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </Form>
+                    <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe} style={{ textDecoration: 'none' }}>
+                        <Button variant="outline-dark">+ Add Recipe</Button>
+                    </a>
                 </div>
             )}
             <Container className='justify-content-center align-items-center'>
                 <Row xs={1} sm={2} md={5} className="justify-content-center">
-                    {currentRecipes.map(recipe => (
+                    {filteredRecipes.map(recipe => (
                         <Col key={recipe.recipe_id} className="g-3 justify-content-center">
                             <Card className=' border-2 text-center'>
                                 <Card.Img

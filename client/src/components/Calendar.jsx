@@ -10,9 +10,8 @@ import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
 import { useDeletePopup } from '@/hooks/useDeletePopup';
 import Tooltip from '@mui/material/Tooltip';
-import SearchIcon from '@mui/icons-material/Search';
 import AddIcon from '@mui/icons-material/Add';
-import { Modal, Button, Form } from 'react-bootstrap';
+import { Button, Form } from 'react-bootstrap';
 
 
 import { useState, useEffect, useRef } from 'react'
