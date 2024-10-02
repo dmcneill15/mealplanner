@@ -3,14 +3,13 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
-//import { useRecipes } from '@/hooks/useRecipes';
 import { fetchRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from './AddRecipePopup';
 import DeletePopup from './DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
 import { useDeletePopup } from '@/hooks/useDeletePopup';
-import { EventSourceInput } from '@fullcalendar/core/index.js'
+import Tooltip from '@mui/material/Tooltip';
 
 
 import { useState, useEffect, useRef } from 'react'
@@ -28,7 +27,7 @@ export default function Calendar() {
     const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
     const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
 
-    const draggableInitialized = useRef(false); // Track Draggable initialization
+    const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
 
     const forceRerender = () => {
@@ -156,15 +155,17 @@ export default function Calendar() {
                     />
                 </div>
             </div>
-            <div style={styles.rightSide} id="draggable-el">
+            <div style={styles.rightSide} id="draggable-el" className='me-3'>
                 <h4 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h4>
                 <div className="center">
-                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + New Recipe</a>
+                <Tooltip title="Create New Recipe" arrow>
+                    <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark mt-2 mb-2`} href="#" role="button" onClick={handleShowAddRecipe}> + </a>
+                    </Tooltip>
                 </div>
-                <div style={{ ...styles.content, display: 'block' }} >
+                <div style={{ ...styles.content, display: 'block' }} className='center border border-secondary rounded-3'>
                     {recipeList.map(recipe => (
                         <div
-                            className={`${faunaOne.className} fc-event border-2 p-1 m-2 w-full rounded-md ml-auto`}
+                            className={`${faunaOne.className} fc-event center border-2 p-1 m-2 w-full rounded-md ml-auto`}
                             title={recipe.title}
                             data-id={recipe.id}
                             key={recipe.id}
@@ -197,7 +198,7 @@ export default function Calendar() {
 const styles = {
     container: {
         display: 'flex',
-        height: '100vh', // Full viewport height
+        //height: '100vh', // Full viewport height
         margin: '0 20px', // Equal margin on left and right
     },
     leftSide: {
@@ -246,7 +247,10 @@ const styles = {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        height: '100%', // Fill the remaining space
+        //border: '2px solid red',
+        //height: '100%', // Fill the remaining space
+        maxHeight: '500px', /* Adjust the height as needed to make a scrollable list*/
+        overflowY: 'auto',
     },
 };
 
