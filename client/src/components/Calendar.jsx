@@ -8,7 +8,9 @@ import { fetchRecipes } from '@/app/api/recipesApi';
 import { addRecipeToMealPlan, getUserMealPlan } from '@/app/api/mealplanApi';
 import AddRecipePopup from './AddRecipePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
+import { useMealPlan } from '@/hooks/useMealPlan';
 import { EventSourceInput } from '@fullcalendar/core/index.js'
+
 
 import { useState, useEffect, useRef } from 'react'
 
@@ -22,9 +24,8 @@ const faunaOne = Fauna_One({
 export default function Calendar() {
 
     const userId = "66f739adc717200fa34ac24b";      //use hardcoded id for now
-    const [recipeList, setRecipeList] = useState([]);
-    const [recipeCalendar, setRecipeCalendar] = useState([]);
-    const [refresh, setRefresh] = useState(false);
+    const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
+    const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
 
 
     const [showModal, setShowModal] = useState(false);
@@ -39,47 +40,10 @@ export default function Calendar() {
 
     const draggableInitialized = useRef(false); // Track Draggable initialization
 
-
-    const forceRerender = () => {
-        setRefresh(prev => !prev);
-    };
-
-    // Fetch recipes when the component mounts to display list on the right hand side
-    useEffect(() => {
-        const getRecipes = async () => {
-            try {
-                const recipes = await fetchRecipes();
-                const formattedRecipes = recipes.map(recipe => ({
-                    title: recipe.recipe_title,
-                    id: recipe.recipe_id,
-                })).sort((a, b) => a.title.localeCompare(b.title)); //Sort alphabetically
-                setRecipeList(formattedRecipes);
-            } catch (error) {
-                console.error('Error fetching recipes:', error);
-            }
-        };
-        getRecipes();
-    }, [refresh]);
-
-    useEffect(() => {
-        if (!draggableInitialized.current) {
-            let draggableEl = document.getElementById('draggable-el');
-            if (draggableEl) {
-                new Draggable(draggableEl, {
-                    itemSelector: ".fc-event",
-                    eventData: function (eventEl) {
-                        let title = eventEl.getAttribute("title");
-                        let id = eventEl.getAttribute("data");
-                        return { title, id };
-                    }
-                });
-                draggableInitialized.current = true; // Mark as initialized
-            }
-        }
-    }, []);
-
+    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN
+    //const [recipeCalendar, setRecipeCalendar] = useState([]);
     // Fetch recipes to display in the calendar
-    useEffect(() => {
+    /*useEffect(() => {
         const fetchMealPlan = async () => {
             try {
                 const mealPlan = await getUserMealPlan(userId);
@@ -100,7 +64,108 @@ export default function Calendar() {
             }
         };
         fetchMealPlan();
-    }, [userId]);
+    }, [userId]);*/
+    /*async function addEvent(data) {
+        if (!data || !data.draggedEl) {
+            console.error('Invalid data structure:', data);
+            return;
+        }
+
+        const { draggedEl, date } = data;
+        const title = draggedEl.innerText;
+        const recipeId = draggedEl.getAttribute("data-id");
+
+        if (!recipeId) {
+            console.error('Recipe ID not found in dragged element:', draggedEl);
+            return;
+        }
+
+        const newMealPlanEntry = createMealPlanEntry(userId, recipeId, date, title);
+
+        try {
+            await addRecipeToMealPlan(newMealPlanEntry);
+            const newEvent = createNewEvent(title, date, recipeId);
+            updateRecipeCalendar(newEvent);
+        } catch (error) {
+            handleAddEventError(error);
+        }
+    }
+
+    function createMealPlanEntry(userId, recipeId, date, title) {
+        return {
+            user_id: userId,
+            recipe_id: recipeId,
+            date: date.toISOString(),
+            title: title
+        };
+    }
+
+    function createNewEvent(title, date, recipeId) {
+        return {
+            title: title,
+            start: date.toISOString(),
+            allDay: true,
+            id: recipeId
+        };
+    }
+
+    function updateRecipeCalendar(newEvent) {
+        setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
+    }
+
+    function handleAddEventError(error) {
+        if (error.response && error.response.status === 409) {
+            alert(error.response.data.message);
+        } else {
+            console.error('Error adding recipe to meal plan:', error);
+        }
+    }*/
+    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN - to a custom hook - able to use this hook in other components */
+    const {
+        recipeCalendar,
+        addEvent
+    } = useMealPlan(userId);
+
+    const forceRerender = () => {
+        setRefresh(prev => !prev);
+    };
+    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN
+
+    // Fetch recipes when the component mounts to display list on the right hand side
+    useEffect(() => {
+        const getRecipes = async () => {
+            try {
+                const recipes = await fetchRecipes();
+                const formattedRecipes = recipes.map(recipe => ({
+                    title: recipe.recipe_title,
+                    id: recipe.recipe_id,
+                })).sort((a, b) => a.title.localeCompare(b.title)); //Sort alphabetically
+                setRecipeList(formattedRecipes);
+            } catch (error) {
+                console.error('Error fetching recipes:', error);
+            }
+        };
+        getRecipes();
+    }, [refresh]);  //can't use recipeList here as it may cause infinte loop. Rather use a flag to refresh recipe display on calendar 
+
+    useEffect(() => {
+        if (!draggableInitialized.current) {
+            let draggableEl = document.getElementById('draggable-el');
+            if (draggableEl) {
+                new Draggable(draggableEl, {
+                    itemSelector: ".fc-event",
+                    eventData: function (eventEl) {
+                        let title = eventEl.getAttribute("title");
+                        let id = eventEl.getAttribute("data");
+                        return { title, id };
+                    }
+                });
+                draggableInitialized.current = true; // Mark as initialized
+            }
+        }
+    }, []);
+
+
 
     /*function handleDateClick(arg) {
         setNewEvent({
@@ -111,104 +176,6 @@ export default function Calendar() {
         });
         setShowModal(true);
     }*/
-
-    /*async function addEvent(data) {
-        //console.log('Add Event Called!');
-
-        if (!data || !data.draggedEl) {
-            console.error('Invalid data structure:', data);
-            return;
-        }
-
-        const draggedEl = data.draggedEl;
-        const title = draggedEl.innerText;
-        const recipeId = draggedEl.getAttribute("data-id");
-
-        if (!recipeId) {
-            console.error('Recipe ID not found in dragged element:', draggedEl);
-            return;
-        }
-
-        const newMealPlanEntry = {
-            user_id: userId,
-            recipe_id: recipeId,
-            date: data.date.toISOString(),
-            title: title
-        };
-
-        try {
-            await addRecipeToMealPlan(newMealPlanEntry);
-            const newEvent = {
-                title: title,
-                start: data.date.toISOString(),
-                allDay: true,
-                id: recipeId
-            };
-
-            setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
-        } catch (error) {
-            if (error.response && error.response.status === 409) {
-                alert(error.response.data.message);
-            } else {
-                console.error('Error adding recipe to meal plan:', error);
-            }
-        }
-    }*/
-        async function addEvent(data) {
-            if (!data || !data.draggedEl) {
-                console.error('Invalid data structure:', data);
-                return;
-            }
-        
-            const { draggedEl, date } = data;
-            const title = draggedEl.innerText;
-            const recipeId = draggedEl.getAttribute("data-id");
-        
-            if (!recipeId) {
-                console.error('Recipe ID not found in dragged element:', draggedEl);
-                return;
-            }
-        
-            const newMealPlanEntry = createMealPlanEntry(userId, recipeId, date, title);
-        
-            try {
-                await addRecipeToMealPlan(newMealPlanEntry);
-                const newEvent = createNewEvent(title, date, recipeId);
-                updateRecipeCalendar(newEvent);
-            } catch (error) {
-                handleAddEventError(error);
-            }
-        }
-        
-        function createMealPlanEntry(userId, recipeId, date, title) {
-            return {
-                user_id: userId,
-                recipe_id: recipeId,
-                date: date.toISOString(),
-                title: title
-            };
-        }
-        
-        function createNewEvent(title, date, recipeId) {
-            return {
-                title: title,
-                start: date.toISOString(),
-                allDay: true,
-                id: recipeId
-            };
-        }
-        
-        function updateRecipeCalendar(newEvent) {
-            setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
-        }
-        
-        function handleAddEventError(error) {
-            if (error.response && error.response.status === 409) {
-                alert(error.response.data.message);
-            } else {
-                console.error('Error adding recipe to meal plan:', error);
-            }
-        }
 
     const handleEventReceive = async (info) => {
         //console.log('Handle Event Receive Called');
@@ -281,7 +248,7 @@ export default function Calendar() {
         }
     }*/
 
-    //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    //-------------------------------------REFACTORED ADD RECIPE TO RECIPE CATALOG- to a custom hook - able to use this hook in other components */
     const {
         newRecipe,
         setNewRecipe,
