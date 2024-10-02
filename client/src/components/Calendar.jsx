@@ -6,8 +6,10 @@ import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
 //import { useRecipes } from '@/hooks/useRecipes';
 import { fetchRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from './AddRecipePopup';
+import DeletePopup from './DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
+import { useDeletePopup } from '@/hooks/useDeletePopup';
 import { EventSourceInput } from '@fullcalendar/core/index.js'
 
 
@@ -36,7 +38,8 @@ export default function Calendar() {
     const {
         recipeCalendar,
         addEvent,
-        updateEvent
+        updateEvent,
+        deleteRecipeFromMealPlan
     } = useMealPlan(userId);
     //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN
 
@@ -50,6 +53,15 @@ export default function Calendar() {
         handleAddRecipe,
     } = useAddRecipePopup(setRecipeList, forceRerender);
     //-------------------------------------REFACTORED ADD */
+
+    const {
+        showDelete,
+        recipeToDelete,
+        isDeleting,
+        handleShowDeleteMealPlanEntry,
+        handleCloseDelete,
+        handleDeleteMealPlanEntry,
+    } = useDeletePopup(setRecipeList, deleteRecipeFromMealPlan);
 
     // Fetch recipes when the component mounts to display list on the right hand side
     useEffect(() => {
@@ -108,6 +120,14 @@ export default function Calendar() {
         }
     };
 
+    const handleEventClick = (info) => {
+        const recipe = {
+            id: info.event.id,
+            title: info.event.title
+        };
+        handleShowDeleteMealPlanEntry(recipe);
+    };
+
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
@@ -129,6 +149,7 @@ export default function Calendar() {
                         //dateClick={handleDateClick}
                         eventReceive={handleEventReceive}   //handles when external recipe is added
                         eventDrop={handleEventDrop}         //handles when exisiting recipe is moved
+                        eventClick={handleEventClick}       //handles removing the entry from the mealplan
                     />
                 </div>
             </div>
@@ -158,6 +179,13 @@ export default function Calendar() {
                 newRecipe={newRecipe}
                 setNewRecipe={setNewRecipe}
                 handleAddRecipe={handleAddRecipe}
+            />
+            <DeletePopup
+                show={showDelete}
+                onHide={handleCloseDelete}
+                recipeTitle={recipeToDelete?.title}
+                handleDelete={handleDeleteMealPlanEntry} // Use the new function for deleting meal plan entry
+                isDeleting={isDeleting}
             />
         </div>
     );
@@ -220,71 +248,3 @@ const styles = {
 };
 
 //https://github.com/NikValdez/NextJSCalendarTut/blob/main/app/page.tsx
-
-
-/*export default function Calendar({recipes}) {
-    const baseURL = "http://localhost:8080";
-
-    const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    //set initial state to recipes passed in or set to empty if no recipe data
-    //add this function to refetch the data from the server once a delete/update/add has been performed
-    const fetchRecipes = async () => {
-        try {
-            const response = await fetch(`${baseURL}/api/recipes`, { cache: 'no-cache' });
-            const result = await response.json();
-            const recipesArray = result.data;
-            console.log(recipesArray)
-            setCurrentRecipes(recipesArray);
-            console.log(currentRecipes);
-        } catch (error) {
-            console.error('Failed to fetch recipes:', error);
-        }
-    };
-
-    // Use useEffect to fetch recipes when the component mounts
-    useEffect(() => {
-        fetchRecipes();
-    }, []); // Empty dependency array means it runs only once on mount
-
-    return (
-        <div className="flex flex-col items-center justify-between p-4" style={{ margin: 'auto', maxWidth: '900px' }}>
-            <div className="flex flex-row justify-between w-full">
-                <div className="flex-1">
-                    <FullCalendar
-                        headerToolbar={{
-                            left: 'today next prev',
-                            center: 'title',
-                            right: 'dayGridMonth timeGridWeek'
-                        }}
-                        plugins={[dayGridPlugin, interactionPlugin, timeGridPlugin]}
-                        initialView="dayGridMonth"
-                        events={recipes}
-                        eventTextColor="black"
-                        eventDisplay="block"
-                        eventBorderColor="green"
-                        displayEventTime={false}
-                        editable={true}
-                        droppable={true}
-                        selectable={true}
-                        //dateClick={handleDateClick}
-                        drop={(data) => addRecipe(data)}
-                        //recipeclick={(data) => handleDeleteModal(data)}
-                        style={{ maxWidth: '100%', height: 'auto' }} // Ensure the calendar is responsive
-                    />
-                </div>
-                <div className="w-1/4 ml-4 border-2 p-2 rounded-md mt-4 bg-violet-50">
-                    <h1 className="font-bold">Add recipes to your plan</h1>
-                    {recipes.map((recipe) => (
-                        <div
-                            className="fc-event border-2 p-1 m-1 w-full rounded-md text-center bg-white"
-                            title={recipe.title}
-                            key={recipe.id}
-                        >
-                            {recipe.title}
-                        </div>
-                    ))}
-                </div>
-            </div>
-        </div>
-
-    )
-}*/

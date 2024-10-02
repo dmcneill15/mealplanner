@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { addRecipeToMealPlan, getUserMealPlan, updateRecipeInMealPlan } from '../app/api/mealplanApi';
+import { addRecipeToMealPlan, getUserMealPlan, updateRecipeInMealPlan, deleteMealPlanEntry } from '../app/api/mealplanApi';
 
 
 export function useMealPlan(userId) {
@@ -67,37 +67,6 @@ export function useMealPlan(userId) {
         }
     };
 
- /*   const updateEvent = async (data) => {
-        console.log(`Data: ${data}`);
-        if (!data || !data.draggedEl) {
-            console.error('Invalid data structure:', data);
-            return;
-        }
-    
-        const { draggedEl, date } = data;
-        const mealPlanId = draggedEl.getAttribute("data-mealplan-id");
-    
-        if (!mealPlanId) {
-            console.error('Meal plan ID not found in dragged element:', draggedEl);
-            return;
-        }
-    
-        const updatedMealPlanEntry = {
-            _id: mealPlanId,
-            date: date.toISOString(),
-        };
-    
-        try {
-            await updateRecipeInMealPlan(updatedMealPlanEntry); // Call the new API endpoint
-            setRecipeCalendar(prevEvents => 
-                prevEvents.map(event => 
-                    event.id === mealPlanId ? { ...event, start: date.toISOString() } : event
-                )
-            );
-        } catch (error) {
-            console.error('Error updating recipe in meal plan:', error);
-        }
-    };*/
     const updateEvent = async (info) => {
         const { event } = info;
         const mealPlanId = event.id;
@@ -116,8 +85,8 @@ export function useMealPlan(userId) {
         try {
             await updateRecipeInMealPlan(updatedMealPlanEntry); // Call the new API endpoint
             setRecipeCalendar(prevEvents => 
-                prevEvents.map(evt => 
-                    evt.id === mealPlanId ? { ...evt, start: date.toISOString() } : evt
+                prevEvents.map(event => 
+                    event.id === mealPlanId ? { ...event, start: date.toISOString() } : event
                 )
             );
         } catch (error) {
@@ -125,7 +94,18 @@ export function useMealPlan(userId) {
         }
     };
 
-    return { recipeCalendar, addEvent, updateEvent };
+    const deleteRecipeFromMealPlan = async (mealPlanId) => {
+        console.log(`useMealPlan ID: ${mealPlanId}`);
+        try {
+            await deleteMealPlanEntry(mealPlanId); // Call the API to delete the meal plan entry
+            setRecipeCalendar(prevEvents => prevEvents.filter(event => event.id !== mealPlanId));
+        } catch (error) {
+            console.error('Error deleting recipe from meal plan:', error);
+        }
+    };
+
+
+    return { recipeCalendar, addEvent, updateEvent, deleteRecipeFromMealPlan };
 }
 
 

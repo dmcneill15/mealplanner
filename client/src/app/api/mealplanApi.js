@@ -59,3 +59,26 @@ export const updateRecipeInMealPlan = async (mealPlanData) => {
         throw error;
     }
 };
+
+export const deleteMealPlanEntry = async (mealPlanID) => {
+    const baseURL = "http://localhost:8080"; // Define the base URL
+    try {
+        const response = await fetch(`${baseURL}/api/mealplan/delete`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ _id: mealPlanID }),
+        });
+
+        if (response.ok) {
+            return { success: true };
+        } else {
+            console.error('Failed to delete recipe');
+            return { success: false };
+        }
+    } catch (error) {
+        console.error('Error deleting recipe:', error);
+        return { success: false, error };
+    }
+};

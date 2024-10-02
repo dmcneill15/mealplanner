@@ -18,4 +18,9 @@ router.put('/update', (req, res) => {
     mealPlanController.updateRecipeInMealPlan(req, res);
 });
 
+// Delete a recipe from the meal plan
+router.delete('/delete', (req, res) => {
+    mealPlanController.deleteMealPlanEntry(req, res);
+});
+
 export default router;

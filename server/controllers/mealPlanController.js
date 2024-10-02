@@ -5,14 +5,6 @@ const addRecipetToMealPlan = async (req, res) => {
     const { user_id, recipe_id, date, title } = req.body;
 
     try {
-        // Check for existing entry
-       /* const existingMealPlan = await MealPlan.findOne({ user_id, recipe_id, date });
-
-        if (existingMealPlan) {
-            // If an existing entry is found, return a conflict response
-            return res.status(409).json({ result: 409, message: 'This recipe is already added to your meal plan for this date.' });
-        }*/
-
         // Create a new MealPlan entry
         const newMealPlan = new MealPlan({
             user_id,
@@ -64,9 +56,32 @@ const updateRecipeInMealPlan = async (req, res) => {
     }
 };
 
+//search for recipe based on _id
+const deleteMealPlanEntry = async (req, res) => {
+    const {_id} = req.body;
+    //console.log(recipe);
+    if (!_id) {
+        return res.status(400).send({ result: 400, message: 'Meal Plan _id is required' });
+    }
+
+    MealPlan.findByIdAndDelete({_id})
+        .then(data => {
+            if (data) {
+                res.send({ result: 200, data: data });
+            } else {
+                res.send({ result: 404, message: 'Meal Plan entry not found' });
+            }
+        })
+        .catch(err => {
+            console.log(err);
+            res.send({ result: 500, error: err.message });
+        });
+};
+
 
 export {
     addRecipetToMealPlan,
     getUserMealPlan,
-    updateRecipeInMealPlan
+    updateRecipeInMealPlan,
+    deleteMealPlanEntry
 };
