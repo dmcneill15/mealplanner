@@ -112,7 +112,7 @@ export default function Calendar() {
         setShowModal(true);
     }*/
 
-    async function addEvent(data) {
+    /*async function addEvent(data) {
         //console.log('Add Event Called!');
 
         if (!data || !data.draggedEl) {
@@ -153,7 +153,62 @@ export default function Calendar() {
                 console.error('Error adding recipe to meal plan:', error);
             }
         }
-    }
+    }*/
+        async function addEvent(data) {
+            if (!data || !data.draggedEl) {
+                console.error('Invalid data structure:', data);
+                return;
+            }
+        
+            const { draggedEl, date } = data;
+            const title = draggedEl.innerText;
+            const recipeId = draggedEl.getAttribute("data-id");
+        
+            if (!recipeId) {
+                console.error('Recipe ID not found in dragged element:', draggedEl);
+                return;
+            }
+        
+            const newMealPlanEntry = createMealPlanEntry(userId, recipeId, date, title);
+        
+            try {
+                await addRecipeToMealPlan(newMealPlanEntry);
+                const newEvent = createNewEvent(title, date, recipeId);
+                updateRecipeCalendar(newEvent);
+            } catch (error) {
+                handleAddEventError(error);
+            }
+        }
+        
+        function createMealPlanEntry(userId, recipeId, date, title) {
+            return {
+                user_id: userId,
+                recipe_id: recipeId,
+                date: date.toISOString(),
+                title: title
+            };
+        }
+        
+        function createNewEvent(title, date, recipeId) {
+            return {
+                title: title,
+                start: date.toISOString(),
+                allDay: true,
+                id: recipeId
+            };
+        }
+        
+        function updateRecipeCalendar(newEvent) {
+            setRecipeCalendar(prevEvents => [...prevEvents, newEvent]);
+        }
+        
+        function handleAddEventError(error) {
+            if (error.response && error.response.status === 409) {
+                alert(error.response.data.message);
+            } else {
+                console.error('Error adding recipe to meal plan:', error);
+            }
+        }
 
     const handleEventReceive = async (info) => {
         //console.log('Handle Event Receive Called');

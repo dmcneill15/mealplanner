@@ -80,3 +80,25 @@ body {
   background-color: black !important; /* Darker green on hover */
   color:white !important;; 
 }
+
+.fc-h-event {
+  background-color: white;
+  color: black;
+  /*border: 1px solid var(--fc-event-border-color);*/
+  border: 1px solid black;
+  display: block;
+}
+
+.fc-event-title{
+  color: black;
+}
+
+.fc-col-header-cell-cushion{
+  color:black;
+  text-decoration: none;
+}
+
+.fc-daygrid-day-number{
+  color:black;
+  text-decoration: none;
+}
