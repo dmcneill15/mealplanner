@@ -47,9 +47,7 @@ const AddRecipePopup = ({ show, onHide, handleAddRecipe, newRecipe, setNewRecipe
                 onChange={(e) => setNewRecipe({ ...newRecipe, image: e.target.value })}
             />
         </Form.Group>*/}
-                    <Button variant="outline-dark" type="submit" className="mt-3">
-                        Add Recipe
-                    </Button>
+                    <Button className={`button-link mt-3`} variant="outline-dark" type='submit'>Add Recipe</Button>
                 </Form>
             </Modal.Body>
         </Modal>

@@ -99,7 +99,7 @@ export default function RecipeCard({ recipes }) {
                         </Col>
                     </Row>
                     <div className="center">
-                        <Button variant="outline-dark" onClick={handleShowAddRecipe}> + Add Recipe </Button>
+                        <Button className={`${faunaOne.className} center button-link`} variant="dark" onClick={handleShowAddRecipe}> + Add Recipe </Button>
                     </div>
                 </Container>
             ) : (
@@ -114,9 +114,7 @@ export default function RecipeCard({ recipes }) {
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </Form>
-                    <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe} style={{ textDecoration: 'none' }}>
-                        <Button variant="outline-dark">+ Add Recipe</Button>
-                    </a>
+                    <Button className={`${faunaOne.className} center button-link`} variant="dark" onClick={handleShowAddRecipe}> + Add Recipe </Button>
                 </div>
             )}
             <Container className='justify-content-center align-items-center'>
@@ -125,9 +123,11 @@ export default function RecipeCard({ recipes }) {
                         <Col key={recipe.recipe_id} className="g-3 justify-content-center">
                             <Card className=' border-2 text-center'>
                                 <Card.Img
-                                    className="mx-auto pt-2"
-                                    src={recipe.image ? recipe.image : "/images/plate.png"}
+                                    className="mx-auto pt-2 card-image-size"
+                                    src={recipe.image ? recipe.image : '/cloche1.jpg'}
                                     alt={`${recipe.recipe_title} image`}
+                                    onClick={() => handleShowRecipeDetails(recipe)}
+                                    style={{ cursor: 'pointer' }}
                                 />
                                 <Card.Body>
                                     <Card.Title className={`${fontCinzel.className} title center fs-5`}

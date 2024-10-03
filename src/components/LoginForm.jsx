@@ -6,7 +6,7 @@ function LoginForm() {
 
     return (
         <Container className="mt-4">
-            <Card  style={{ width: '400px', margin: 'auto', border: "none" }}>
+            <Card  className='transparent-bg' style={{ width: '400px', margin: 'auto', border: "none" }}>
                 <Form>
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label>Email address</Form.Label>
@@ -17,7 +17,7 @@ function LoginForm() {
                         <Form.Label>Password</Form.Label>
                         <Form.Control type="password" placeholder="Password" />
                     </Form.Group>
-                    <Button style={{ textDecoration: 'none' }} variant="outline-dark" type='submit'>Login</Button>
+                    <Button className={`${faunaOne.className} center button-link`} variant="dark" type='submit'>Login</Button>
                 </Form>
             </Card>
         </Container>

@@ -65,6 +65,11 @@ body {
   flex: 1; /* This ensures the main content takes up the remaining space */
 }
 
+.card-image-size{
+  width: 50%;
+  height:auto;
+}
+
 .center {
   display: flex;
   justify-content: center;
@@ -74,9 +79,17 @@ body {
   font-size: 40px;
 }
 
+.transparent-bg {
+  background-color: transparent;
+}
+
 .nav-link {
   font-size: 1.25rem;
   color: black;
+}
+
+.intro-paragraph{
+  font-size: 1.25rem;
 }
 
 .nav-link.active {
@@ -86,6 +99,10 @@ body {
 .icon-button:hover {
   background-color: #343a40; /* Dark background on hover */
   color: white; /* Change text color to white */
+}
+
+.button-link{
+  text-decoration: none;
 }
 
 .icon-button:hover .custom-icon {

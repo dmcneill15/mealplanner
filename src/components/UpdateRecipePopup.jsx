@@ -48,7 +48,7 @@ const UpdateRecipePopup = ({ show, onHide, handleUpdateRecipe, updatedRecipe, se
                     onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, image: e.target.value })}
                 />
             </Form.Group> */}
-                    <Button variant="outline-dark" type="submit" className="mt-3">
+                    <Button className={`button-link mt-3`} variant="outline-dark" type="submit">
                         Update Recipe
                     </Button>
                 </Form>

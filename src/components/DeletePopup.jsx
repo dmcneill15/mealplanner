@@ -11,7 +11,7 @@ const DeletePopup = ({ show, onHide, recipeTitle, handleDelete, isDeleting }) =>
                 <Button variant="secondary" onClick={onHide}>
                     Cancel
                 </Button>
-                <Button variant="danger" onClick={handleDelete} disabled={isDeleting}>
+                <Button className={`button-link`} variant="danger" onClick={handleDelete} disabled={isDeleting}>
                     {isDeleting ? 'Deleting...' : 'Delete'}
                 </Button>
             </Modal.Footer>
