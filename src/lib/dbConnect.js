@@ -9,7 +9,7 @@ if (!DB_URI) {
 // if the connection fails, try 127.0.0.1 instead oflocalhost below
 const uri = process.env.DB_URI;
 
-async function connectToDatabase() {
+/*async function connectToDatabase() {
   // Connect to MongoDB
   mongoose.connect(uri)
     .then(() => console.log('MongoDB Connected'))
@@ -18,8 +18,8 @@ async function connectToDatabase() {
   const db = mongoose.connection;
   // Bind connection to error event (to get notification ofconnection errors)
   db.on("error", console.error.bind(console, "MongoDBconnection error:"));
-}
-/*let cached = global.mongoose;
+}*/
+let cached = global.mongoose;
 
 if (!cached) {
   cached = global.mongoose = { conn: null, promise: null };
@@ -41,6 +41,6 @@ async function connectToDatabase() {
   }
   cached.conn = await cached.promise;
   return cached.conn;
-}*/
+}
 
 export default connectToDatabase;
