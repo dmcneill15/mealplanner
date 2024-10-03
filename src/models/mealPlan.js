@@ -10,7 +10,8 @@ const mealPlanSchema = new Schema({
     title: {type: String, required: true}
 }, { timestamps: true });
 
-export default mongoose.model("MealPlan", mealPlanSchema);
+//export default mongoose.model("MealPlan", mealPlanSchema);
+export default mongoose.models.MealPlan || mongoose.model('MealPlan', mealPlanSchema);
 
 //Question: what is the timestamp here:
 //timestamps : true - automatically adds the fields for createdAt and updatedAt

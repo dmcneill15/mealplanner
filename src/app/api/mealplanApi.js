@@ -1,7 +1,8 @@
+const baseURL = "/api/mealplan"; // Update the base URL to use the Next.js API routes
+
 export const addRecipeToMealPlan = async (mealPlanData) => {
-    const baseURL = "http://localhost:8080"; // Define the base URL
-    try {
-        const response = await fetch(`${baseURL}/api/mealplan/add`, {
+      try {
+        const response = await fetch(`${baseURL}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -21,9 +22,8 @@ export const addRecipeToMealPlan = async (mealPlanData) => {
 };
 
 export const getUserMealPlan = async (user_id) => {
-    const baseURL = "http://localhost:8080";
     try {
-        const response = await fetch(`${baseURL}/api/mealplan/${user_id}`);
+        const response = await fetch(`${baseURL}/${user_id}`);
 
         if (response.ok) {
             //console.log("response was ok");
@@ -39,9 +39,8 @@ export const getUserMealPlan = async (user_id) => {
 };
 
 export const updateRecipeInMealPlan = async (mealPlanData) => {
-    const baseURL = "http://localhost:8080";
     try {
-        const response = await fetch(`${baseURL}/api/mealplan/update`, {
+        const response = await fetch(`${baseURL}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',
@@ -61,9 +60,10 @@ export const updateRecipeInMealPlan = async (mealPlanData) => {
 };
 
 export const deleteMealPlanEntry = async (mealPlanID) => {
-    const baseURL = "http://localhost:8080"; // Define the base URL
+    //const baseURL = "http://localhost:8080"; // Define the base URL
+    console.log(`Meal plan to delete: ${mealPlanID}`)
     try {
-        const response = await fetch(`${baseURL}/api/mealplan/delete`, {
+        const response = await fetch(`${baseURL}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',

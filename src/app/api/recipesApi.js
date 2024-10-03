@@ -1,7 +1,9 @@
+const baseURL = "/api/recipes"; // Update the base URL to use the Next.js API routes
+
 export const fetchRecipes = async () => {
-    const baseURL = "http://localhost:8080"; // Define the base URL
+    //const baseURL = "http://localhost:8080"; // Define the base URL
     try {
-        const response = await fetch(`${baseURL}/api/recipes`, { cache: 'no-cache' });
+        const response = await fetch(`${baseURL}`, { cache: 'no-cache' });
         if (!response.ok) throw new Error('Failed to fetch recipes');
         const result = await response.json();
         const recipesArray = result.data;
@@ -13,9 +15,9 @@ export const fetchRecipes = async () => {
 };
 
 export const deleteRecipe = async (recipeId) => {
-    const baseURL = "http://localhost:8080"; // Define the base URL
+    //const baseURL = "http://localhost:8080"; // Define the base URL
     try {
-        const response = await fetch(`${baseURL}/api/recipes/delete`, {
+        const response = await fetch(`${baseURL}`, {
             method: 'DELETE',
             headers: {
                 'Content-Type': 'application/json',
@@ -36,15 +38,15 @@ export const deleteRecipe = async (recipeId) => {
 };
 
 export const addRecipe = async (newRecipe) => {
-    const baseURL = "http://localhost:8080"; // Define the base URL
+    //const baseURL = "http://localhost:8080"; // Define the base URL
 
     const newRecipeWithId = {
         ...newRecipe,
         //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
-        user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now
+        user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now - NOTE THIS IS DIFFERENT TO _id
     };
     try {
-        const response = await fetch(`${baseURL}/api/recipes/create`, {
+        const response = await fetch(`${baseURL}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
@@ -65,9 +67,9 @@ export const addRecipe = async (newRecipe) => {
 };
 
 export const updateRecipe = async (recipeToUpdateId, recipeUpdates) => {
-    const baseURL = "http://localhost:8080"; // Define the base URL
+    //const baseURL = "http://localhost:8080"; // Define the base URL
     try {
-        const response = await fetch(`${baseURL}/api/recipes/update`, {
+        const response = await fetch(`${baseURL}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

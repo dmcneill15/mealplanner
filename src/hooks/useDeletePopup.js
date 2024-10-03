@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { deleteRecipe, fetchRecipes } from '../app/api/recipesApi';
 
-export const useDeletePopup = (setCurrentRecipes, deleteRecipeFromMealPlan) => {
+export const useDeletePopup = (setCurrentRecipes) => {
     const [showDelete, setShowDelete] = useState(false);
     const [recipeToDelete, setRecipeToDelete] = useState('');
     const [recipeTitle, setRecipeTitle] = useState('');
@@ -13,11 +13,11 @@ export const useDeletePopup = (setCurrentRecipes, deleteRecipeFromMealPlan) => {
         setShowDelete(true);                    //Show the popup
     };
 
-    const handleShowDeleteMealPlanEntry = (entry) => {
+    /*const handleShowDeleteMealPlanEntry = (entry) => {
         setRecipeToDelete(entry);
         setRecipeTitle(entry.title);    //Title for display
         setShowDelete(true);                    //Show the popup
-    }
+    }*/
 
     const handleCloseDelete = () => {
         setShowDelete(false);
@@ -49,15 +49,13 @@ export const useDeletePopup = (setCurrentRecipes, deleteRecipeFromMealPlan) => {
         handleCloseDelete();  // Close the modal
     };
 
-    const handleDeleteMealPlanEntry = async () => {
+    /*const handleDeleteMealPlanEntry = async () => {
         if (!recipeToDelete) return;
-
-        console.log(`useDeletePopup recipe to delete: ${recipeToDelete}`);
-
         const { id, title } = recipeToDelete;
         setIsDeleting(true);
 
         try {
+            console.log(`Handle delete:${id}`);
             await deleteRecipeFromMealPlan(id); // Call the function to delete the recipe from the meal plan
             setIsDeleting(false);
             handleCloseDelete(); // Close the modal
@@ -65,18 +63,19 @@ export const useDeletePopup = (setCurrentRecipes, deleteRecipeFromMealPlan) => {
             console.error(`Failed to delete recipe from meal plan: ${title}`, error);
             setIsDeleting(false);
         }
-    };
+    };*/
 
     return {
         showDelete,
         recipeToDelete,
         recipeTitle,
         isDeleting,
+        setIsDeleting,
         handleShowDelete,
-        handleShowDeleteMealPlanEntry,
+        //handleShowDeleteMealPlanEntry,
         handleCloseDelete,
         onDeleteSuccess,
         handleDelete,
-        handleDeleteMealPlanEntry
+        //handleDeleteMealPlanEntry
     };
 };
