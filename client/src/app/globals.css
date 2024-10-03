@@ -41,16 +41,6 @@ body {
   justify-content: center;
 }
 
-.no-outline {
-  outline: none;
-  box-shadow: none;
-}
-
-.no-outline:focus {
-  outline: none;
-  box-shadow: none;
-}
-
 .icon-button:hover {
   background-color: #343a40; /* Dark background on hover */
   color: white; /* Change text color to white */

@@ -11,17 +11,6 @@ const getRecipes = (res) => {
         });
 };
 
-/*const body = await req.json();
-    const recipe = body;
-
-    //this validation can be moved into a separate function
-    if (!recipe.recipe_id || !recipe.recipe_title) {
-        return ResponseBuilder.invalidRequest('Recipe is not complete', 400);
-    }
-
-    recipes.push(recipe);
-    return ResponseBuilder.successResponse({ 'message': 'recipe added' });
-*/
 const createRecipe = async (req, res) => {
     // Creates a new recipe using JSON data POSTed in request body
     const recipe = req.body;

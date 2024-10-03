@@ -5,7 +5,8 @@ import '@fullcalendar/daygrid/main.css';
 import '@fullcalendar/interaction/main.css';
 import '@fullcalendar/list/main.css';
 import "./globals.css";*/
-
+import { Button } from 'react-bootstrap';
+import Link from 'next/link';
 
 // Import  font
 import { EB_Garamond, Cinzel, Fauna_One, Montaga } from 'next/font/google';
@@ -53,10 +54,12 @@ export default function Home() {
       </section>
       <section>
         <div>
-          <h2 className={`${fontCinzel.className} title center mt-5` }>Let's get planning</h2>
+          <h2 className={`${fontCinzel.className} title center mt-5`}>Let's get planning</h2>
           <div className="center">
-            <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark me-2`} href="#" role="button">Sign Up</a>
-            <a className={`${faunaOne.className} title center custom-btn btn btn-outline-dark`} href="#" role="button">Login</a>
+            <Button className={`${faunaOne.className} title center me-3`} style={{ textDecoration: 'none' }} variant="outline-dark">Sign Up</Button>
+            <Link href="/login" passHref style={{ textDecoration: 'none' }}>
+              <Button className={`${faunaOne.className} title center`} style={{ textDecoration: 'none' }} variant="outline-dark">Login</Button>
+            </Link>
           </div>
         </div>
       </section>
