@@ -6,7 +6,7 @@ export default async function Recipes() {
         <main>
             <section>
                 <div className="title-container mb-4">
-                    <h2 className={`${montega.className} title center`}>Your Recipe Catalog</h2>
+                    <h2 className={`${montega.className} title center sub-head`}>Your Recipe Catalog</h2>
                 </div>
             </section>
             <RecipeCard />

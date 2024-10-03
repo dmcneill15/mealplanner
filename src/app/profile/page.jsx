@@ -25,7 +25,6 @@ export default function Profiles() {
         <main>
             <section>
                 <div className="title-container">
-                {/*<h2 className={`${montega.className} title center`}>Welcome</h2>*/}
                 </div>
             </section>
             {usersJSX}

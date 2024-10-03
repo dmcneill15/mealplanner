@@ -140,13 +140,13 @@ export default function Calendar() {
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
-                <div style={styles.calendarContainer} >
+                <div style={styles.calendarContainer}>
                     <FullCalendar
                         ref={calendarRef}
                         headerToolbar={{
                             left: 'today prev next',
                             center: 'title',
-                            right: 'dayGridMonth,listMonth'
+                            right: 'dayGridMonth listMonth'
                         }}
                         plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
                         initialView="dayGridMonth"
@@ -164,8 +164,8 @@ export default function Calendar() {
                 </div>
             </div>
             <div style={styles.rightSide} id="draggable-el" className='me-3'>
-                <h4 className={`${faunaOne.className} title center`} style={styles.heading}>Add Your Recipes</h4>
-                <div className="center mb-2">
+                <h2 className={`${montega.className} sub-head center`}>Add Your Recipes</h2>
+                <div className="center mb-2 bg-white">
                     <Form className="d-flex me-2" size="sm">
                         <Form.Control
                             type="search"
@@ -182,10 +182,10 @@ export default function Calendar() {
                         </a>
                     </Tooltip>
                 </div>
-                <div style={{ ...styles.content, display: 'block' }} className='center border border-secondary rounded-3'>
+                <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
                     {filteredRecipes.map(recipe => (
                         <div
-                            className={`${faunaOne.className} fc-event center border-2 p-1 m-2 w-full rounded-md ml-auto`}
+                            className={`${faunaOne.className} fc-event center mb-2`}
                             title={recipe.title}
                             data-id={recipe.id}
                             key={recipe.id}
@@ -222,7 +222,7 @@ const styles = {
         margin: '0 20px', // Equal margin on left and right
     },
     leftSide: {
-        flex: 3, // Left side takes up 2/3 of the available space
+        flex: 3, // Left side takes up 3/4 of the available space
         display: 'flex',
         flexDirection: 'column', // Stack heading and calendar vertically
         justifyContent: 'flex-start', // Align items to the top
@@ -237,14 +237,6 @@ const styles = {
         height: 0, // Set to 0 to allow for height based on aspect ratio
         paddingBottom: '80%', // Set padding to maintain aspect ratio (1:1)
         position: 'relative', // Positioning context for the calendar
-    },
-    calendarStyle: {
-        position: 'absolute', // Position it absolutely within the container
-        top: 0, // Align to the top
-        left: 0, // Align to the left
-        right: 0, // Stretch to the right
-        bottom: 0, // Stretch to the bottom
-        height: '100%', // Ensure it fills the container height
     },
     rightSide: {
         flex: 1, // Right side takes up 1/3 of the available space

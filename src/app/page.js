@@ -8,7 +8,7 @@ export default function Home() {
     <main>
       <section>
         <div className="title-container">
-          <h2 className={`${montega.className} title center`}> Welcome to your personal meal planner!</h2>
+          <h2 className={`${montega.className} sub-head center`}> Welcome to your personal meal planner!</h2>
           <p className={`${faunaOne.className} text-center mt-4 intro-paragraph`}>
             Create and organize all in one place <br></br>
           </p>
@@ -20,11 +20,11 @@ export default function Home() {
       </section>
       <section>
         <div>
-          <h2 className={`${fontCinzel.className} slogan center mt-5`}>Let's get planning</h2>
+          <h2 className={`${fontCinzel.className} sub-head center mt-5`}>Let's get planning</h2>
           <div className="center">
-            <Button className={`${faunaOne.className} center me-3 button-link`} variant="dark">Sign Up</Button>
+            <Button className={`${faunaOne.className} center me-3 button-link intro-paragraph`} variant="dark">Sign Up</Button>
             <Link href="/login" passHref style={{ textDecoration: 'none' }}>
-              <Button className={`${faunaOne.className} center button-link`} variant="dark">Login</Button>
+              <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Login</Button>
             </Link>
           </div>
         </div>

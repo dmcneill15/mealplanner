@@ -1,4 +1,3 @@
-// Import  font
 import { EB_Garamond, Cinzel, Fauna_One, Montaga } from 'next/font/google';
 
 export const fontCinzel = Cinzel({

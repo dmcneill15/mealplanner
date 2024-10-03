@@ -17,9 +17,9 @@ function ProfileCard({ user }) {
 
     return (
         <Container>
-            <h2 className={`${montega.className} title center`}>Hello, {user.user_name}!</h2>
+            <h2 className={`${montega.className} title center sub-head`}>Hello, {user.user_name}!</h2>
 
-            <Card className="text-center mt-4" style={{ width: '500px', margin: 'auto' }}>
+            <Card className="text-center mt-4" style={{ maxWidth: '500px', margin: 'auto' }}>
                 <Card.Header className={`${fontCinzel.className} slogan center`}>Settings</Card.Header>
                 <Card.Body>
                     <ListGroup>
