@@ -12,16 +12,10 @@ import { useDeletePopup } from '@/hooks/useDeletePopup';
 import Tooltip from '@mui/material/Tooltip';
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Form } from 'react-bootstrap';
-
+import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 import { useState, useEffect, useRef } from 'react'
 
-import { EB_Garamond, Cinzel, Fauna_One } from 'next/font/google';
-const faunaOne = Fauna_One({
-    weight: ['400'],
-    style: ['normal'],
-    subsets: ['latin'],
-});
 
 export default function Calendar() {
 

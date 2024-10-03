@@ -1,6 +1,5 @@
 'use client' // client component, not server rendered
 import { useState, useEffect } from 'react';
-import 'bootstrap/dist/css/bootstrap.min.css';
 import { Card, Col, Row, Container, Button, Form } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import EditNoteIcon from '@mui/icons-material/EditNote';
@@ -16,27 +15,7 @@ import AddRecipePopup from './AddRecipePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import UpdateRecipePopup from './UpdateRecipePopup';
 import { useUpdateRecipePopup } from '@/hooks/useUpdateRecipePopup';
-
-import { EB_Garamond, Cinzel, Fauna_One } from 'next/font/google';
-
-const ebGaramond = EB_Garamond({
-    weight: ['700'],
-    style: ['normal', 'italic'],
-    subsets: ['latin'],
-});
-
-const fontCinzel = Cinzel({
-    weight: ['600'],
-    style: ['normal'],
-    subsets: ['latin'],
-});
-
-const faunaOne = Fauna_One({
-    weight: ['400'],
-    style: ['normal'],
-    subsets: ['latin'],
-});
-
+import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 //Recipe card takes delete function as a prop which is actioned on the delete icon press
 export default function RecipeCard({ recipes }) {

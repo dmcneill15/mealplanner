@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Button } from 'react-bootstrap';
+import { Modal, Button, Image } from 'react-bootstrap';
 
 const RecipeDetailsPopup = ({ show, onHide, recipe }) => {
   return (
@@ -8,7 +8,7 @@ const RecipeDetailsPopup = ({ show, onHide, recipe }) => {
         <Modal.Title>{recipe?.recipe_title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <img
+        <Image
           className="img-fluid mb-3"
           src={recipe?.image ? recipe.image : "/images/plate.png"}
           alt={recipe?.recipe_title}

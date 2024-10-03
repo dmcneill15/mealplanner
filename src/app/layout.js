@@ -1,33 +1,8 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
-/*import '@fullcalendar/core/main.css';
-import '@fullcalendar/daygrid/main.css';
-import '@fullcalendar/interaction/main.css';
-import '@fullcalendar/list/main.css';*/
 import "./globals.css";
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
-
-// Import  font
-import { EB_Garamond, Cinzel, Fauna_One } from 'next/font/google';
-
-const ebGaramond = EB_Garamond({
-    weight: ['700'],
-    style: ['normal', 'italic'],
-    subsets: ['latin'],
-});
-
-const fontCinzel = Cinzel({
-    weight: ['600'],
-    style: ['normal'],
-    subsets: ['latin'],
-});
-
-const faunaOne = Fauna_One({
-    weight: ['400'],
-    style: ['normal'],
-    subsets: ['latin'],
-});
-
+import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 export const metadata = {
   title: "Plan to Plate",

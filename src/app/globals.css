@@ -41,6 +41,19 @@ body {
   justify-content: center;
 }
 
+.title{
+  font-size: 40px;
+}
+
+.nav-link{
+  font-size: 1.25rem;
+}
+
+.nav-link.active {
+  font-weight: bold;
+  color: #007bff; /* Adjust the color as needed */
+}
+
 .icon-button:hover {
   background-color: #343a40; /* Dark background on hover */
   color: white; /* Change text color to white */
