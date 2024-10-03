@@ -19,7 +19,8 @@ export const useAddRecipePopup = (setCurrentRecipes) => {
         try {
             await addRecipe(newRecipe);
             const updatedRecipes = await fetchRecipes();
-            setCurrentRecipes(updatedRecipes);
+            const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
+            setCurrentRecipes(sortedRecipes);
         } catch (error) {
             console.error('Error adding recipe:', error);
         } finally {

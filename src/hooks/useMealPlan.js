@@ -55,8 +55,8 @@ export function useMealPlan(userId) {
                 title: title,
                 start: date.toISOString(),
                 allDay: true,
-                _id: newRecipeEntry._id,
-                key: newRecipeEntry._id
+                id: newRecipeEntry.data._id,
+                key: newRecipeEntry.data._id
             };
             setRecipeCalendar(recipeCalendar => [...recipeCalendar, newEvent]);
         } catch (error) {
@@ -95,16 +95,34 @@ export function useMealPlan(userId) {
         }
     };
 
-    const deleteRecipeFromMealPlan = async (mealPlanId) => {
-        console.log(`useMealPlan ID: ${mealPlanId}`);
+    /*const deleteRecipeFromMealPlan = async (mealPlanId) => {
         try {
             await deleteMealPlanEntry(mealPlanId); // Call the API to delete the meal plan entry
+            //const updatedRecipes = await getUserMealPlan(userId);
             setRecipeCalendar(prevEvents => prevEvents.filter(event => event.id !== mealPlanId));
+            //setRecipeCalendar(updatedRecipes);
         } catch (error) {
             console.error('Error deleting recipe from meal plan:', error);
         }
-    };
+    };*/
 
+    const deleteRecipeFromMealPlan = async (recipe, handleCloseDelete, setIsDeleting) => {
+        if (!recipe) return;
+        const { id, title } = recipe;
+
+        setIsDeleting(true);
+        try {
+            await deleteMealPlanEntry(id); // Call the API to delete the meal plan entry
+            //const updatedRecipes = await getUserMealPlan(userId);
+            setRecipeCalendar(prevEvents => prevEvents.filter(event => event.id !== id));
+            //setRecipeCalendar(updatedRecipes);
+            setIsDeleting(false);
+            handleCloseDelete();
+        } catch (error) {
+            console.error('Error deleting recipe from meal plan:', error);
+            setIsDeleting(false);
+        }
+    };
 
     return { recipeCalendar, addEvent, updateEvent, deleteRecipeFromMealPlan };
 }

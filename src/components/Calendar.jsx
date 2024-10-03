@@ -25,7 +25,8 @@ const faunaOne = Fauna_One({
 
 export default function Calendar() {
 
-    const userId = "66f739adc717200fa34ac24b";          //use hardcoded id for now
+    //const userId = "66fb8efadbee721364a45c8c";          //use hardcoded id for now
+    const userId = '66f739adc717200fa34ac24b';
     const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
     const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
     const [searchQuery, setSearchQuery] = useState(''); //state for search query
@@ -61,10 +62,10 @@ export default function Calendar() {
         showDelete,
         recipeToDelete,
         isDeleting,
-        handleShowDeleteMealPlanEntry,
+        setIsDeleting,
+        handleShowDelete,
         handleCloseDelete,
-        handleDeleteMealPlanEntry,
-    } = useDeletePopup(setRecipeList, deleteRecipeFromMealPlan);
+    } = useDeletePopup();
 
     // Fetch recipes when the component mounts to display list on the right hand side
     useEffect(() => {
@@ -82,6 +83,12 @@ export default function Calendar() {
         };
         getRecipes();
     }, [refresh]);  //can't use recipeList here as it may cause infinte loop. Rather use a flag to refresh recipe display on calendar 
+
+    //filter recipes based on search query 
+    const filteredRecipes = recipeList.filter(recipe =>
+        recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+
 
     useEffect(() => {
         if (!draggableInitialized.current) {
@@ -129,14 +136,12 @@ export default function Calendar() {
             id: info.event.id,
             title: info.event.title
         };
-        handleShowDeleteMealPlanEntry(recipe);
+        handleShowDelete(recipe);
     };
 
-    //filter recipes based on search query 
-    const filteredRecipes = recipeList.filter(recipe =>
-        recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-
+    const handleDeleteFromMealPlan = () => {
+        deleteRecipeFromMealPlan(recipeToDelete, handleCloseDelete, setIsDeleting);
+    };
 
     return (
         <div style={styles.container}>
@@ -174,7 +179,7 @@ export default function Calendar() {
                             className="me-2"
                             aria-label="Search"
                             value={searchQuery}
-                            onChange={(e)=> setSearchQuery(e.target.value)}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </Form>
                     <Tooltip title="Create New Recipe" arrow>
@@ -209,7 +214,7 @@ export default function Calendar() {
                 show={showDelete}
                 onHide={handleCloseDelete}
                 recipeTitle={recipeToDelete?.title}
-                handleDelete={handleDeleteMealPlanEntry} // Use the new function for deleting meal plan entry
+                handleDelete={handleDeleteFromMealPlan} // Use the new function for deleting meal plan entry
                 isDeleting={isDeleting}
             />
         </div>
