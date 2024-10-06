@@ -1,19 +1,14 @@
 'use client' // client component, not server rendered
 import { Card, Container, ListGroup } from 'react-bootstrap';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 function ProfileCard({ user }) {
 
     const handleAction = (item) => {
         console.log(`Action for ${item} clicked`);
-        // Add your action handling logic here
+        // Add action handling logic here
     };
 
-    const aboutItems = [
-        'Username: ',
-        'Email: ',
-        'Password: ',
-    ];
 
     return (
         <Container>

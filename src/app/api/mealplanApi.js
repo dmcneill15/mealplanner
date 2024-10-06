@@ -1,4 +1,4 @@
-const baseURL = "/api/mealplan"; // Update the base URL to use the Next.js API routes
+const baseURL = "/api/mealplan"; // base URL using NextJS API Router
 
 export const addRecipeToMealPlan = async (mealPlanData) => {
       try {
@@ -26,8 +26,6 @@ export const getUserMealPlan = async (user_id) => {
         const response = await fetch(`${baseURL}/${user_id}`);
 
         if (response.ok) {
-            //console.log("response was ok");
-            //console.log(response);
             return response.json();
         } else {
             throw new Error('Failed to fetch meal plan');
@@ -60,7 +58,6 @@ export const updateRecipeInMealPlan = async (mealPlanData) => {
 };
 
 export const deleteMealPlanEntry = async (mealPlanID) => {
-    //const baseURL = "http://localhost:8080"; // Define the base URL
     console.log(`Meal plan to delete: ${mealPlanID}`)
     try {
         const response = await fetch(`${baseURL}`, {

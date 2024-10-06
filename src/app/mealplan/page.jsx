@@ -1,5 +1,5 @@
-import Calendar from '@/components/Calendar';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import Calendar from '@/components/Calendar/Calendar';
+import { faunaOne, montega } from '@/lib/fonts';
 
 export default async function Recipes() {
     return (

@@ -2,8 +2,8 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/dbConnect';
 import MealPlan from '@/models/mealPlan';
 
+///api/mealplan/[user_id]/route.js
 export async function GET(req, { params }) {
-    console.log("Get user meal plan received");
     await connectToDatabase();
 
     try {

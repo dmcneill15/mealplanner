@@ -1,5 +1,4 @@
 import ProfileCard from '@/components/ProfileCard';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 export default function Profiles() {
     const userData = [

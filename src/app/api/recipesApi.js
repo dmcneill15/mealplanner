@@ -1,7 +1,6 @@
-const baseURL = "/api/recipes"; // Update the base URL to use the Next.js API routes
+const baseURL = "/api/recipes"; // base URL using NextJS API Router
 
 export const fetchRecipes = async () => {
-    //const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}`, { cache: 'no-cache' });
         if (!response.ok) throw new Error('Failed to fetch recipes');
@@ -10,12 +9,11 @@ export const fetchRecipes = async () => {
         return recipesArray;
     } catch (error) {
         console.error('Failed to fetch recipes:', error);
-        throw error; // Rethrow to handle in the component if needed
+        throw error; 
     }
 };
 
 export const deleteRecipe = async (recipeId) => {
-    //const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}`, {
             method: 'DELETE',
@@ -38,11 +36,8 @@ export const deleteRecipe = async (recipeId) => {
 };
 
 export const addRecipe = async (newRecipe) => {
-    //const baseURL = "http://localhost:8080"; // Define the base URL
-
     const newRecipeWithId = {
         ...newRecipe,
-        //recipe_id: uuidv4(), // Generate a unique ID - don't need to do this as mongoDB generates this for us as this is setup in the schema
         user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now - NOTE THIS IS DIFFERENT TO _id
     };
     try {
@@ -67,7 +62,6 @@ export const addRecipe = async (newRecipe) => {
 };
 
 export const updateRecipe = async (recipeToUpdateId, recipeUpdates) => {
-    //const baseURL = "http://localhost:8080"; // Define the base URL
     try {
         const response = await fetch(`${baseURL}`, {
             method: 'PUT',
@@ -87,6 +81,6 @@ export const updateRecipe = async (recipeToUpdateId, recipeUpdates) => {
         }
     } catch (error) {
         console.error('Error updating recipe:', error);
-        throw error; // Rethrow to handle in the component if needed
+        throw error;
     }
 }

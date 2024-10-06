@@ -64,7 +64,7 @@ body {
   left: 0;
   width: 100%;
   height: 100%;
-  background-image: url("/background1.jpg");
+  background-image: url("/background2.jpg");
   background-size: 100%;
   background-repeat: repeat;
   background-position: center top;
@@ -120,10 +120,11 @@ body {
 
 .nav-link.active {
   color: black !important;
+  font-weight: bolder;
 }
 
 .transparent-bg {
-  background-color: transparent;
+  background: transparent;
 }
 
 .icon-button:hover {
@@ -147,7 +148,8 @@ body {
   background-color: rgba(255, 250, 236, 0.55);
 }
 
-/* Calendar Styles */
+
+/* Calendar Styles - Internal Calendar Tags */
 .fc {
   color: black !important; /* Set all text in the calendar to black */
 }
