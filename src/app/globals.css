@@ -120,6 +120,7 @@ body {
 
 .nav-link.active {
   color: black !important;
+  font-weight: bolder;
 }
 
 .transparent-bg {

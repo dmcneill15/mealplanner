@@ -6,7 +6,7 @@ import Navbar from 'react-bootstrap/Navbar';
 import { fontCinzel, faunaOne } from '@/lib/fonts';
 
 function NavBar() {
-    const pathname = usePathname(); // hook to check current path
+    const pathname = usePathname(); // Hook to check current active path
 
     return (
         <div className={`mb-4 `}>

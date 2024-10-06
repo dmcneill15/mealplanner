@@ -84,7 +84,7 @@ export function useMealPlan(userId) {
         };
 
         try {
-            await updateRecipeInMealPlan(updatedMealPlanEntry); // Call the new API endpoint
+            await updateRecipeInMealPlan(updatedMealPlanEntry);
             setRecipeCalendar(prevEvents =>
                 prevEvents.map(event =>
                     event.id === mealPlanId ? { ...event, start: date.toISOString() } : event
@@ -95,27 +95,14 @@ export function useMealPlan(userId) {
         }
     };
 
-    /*const deleteRecipeFromMealPlan = async (mealPlanId) => {
-        try {
-            await deleteMealPlanEntry(mealPlanId); // Call the API to delete the meal plan entry
-            //const updatedRecipes = await getUserMealPlan(userId);
-            setRecipeCalendar(prevEvents => prevEvents.filter(event => event.id !== mealPlanId));
-            //setRecipeCalendar(updatedRecipes);
-        } catch (error) {
-            console.error('Error deleting recipe from meal plan:', error);
-        }
-    };*/
-
     const deleteRecipeFromMealPlan = async (recipe, handleCloseDelete, setIsDeleting) => {
         if (!recipe) return;
         const { id, title } = recipe;
 
         setIsDeleting(true);
         try {
-            await deleteMealPlanEntry(id); // Call the API to delete the meal plan entry
-            //const updatedRecipes = await getUserMealPlan(userId);
+            await deleteMealPlanEntry(id);
             setRecipeCalendar(prevEvents => prevEvents.filter(event => event.id !== id));
-            //setRecipeCalendar(updatedRecipes);
             setIsDeleting(false);
             handleCloseDelete();
         } catch (error) {
