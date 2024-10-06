@@ -15,19 +15,18 @@ import AddRecipePopup from './AddRecipePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import UpdateRecipePopup from './UpdateRecipePopup';
 import { useUpdateRecipePopup } from '@/hooks/useUpdateRecipePopup';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import { fontCinzel, faunaOne } from '@/lib/fonts';
 
-//Recipe card takes delete function as a prop which is actioned on the delete icon press
+
 export default function RecipeCard({ recipes }) {
-    const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    //set initial state to recipes passed in or set to empty if no recipe data
-    const [searchQuery, setSearchQuery] = useState('');                     //state for search query
+    const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    // Set initial state to recipes passed in or set to empty if no recipe data
+    const [searchQuery, setSearchQuery] = useState('');                     // State for search query
 
     // Use useEffect to fetch recipes when the component mounts
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const recipesArray = await fetchRecipes(); // Call the API function
-                //const updatedRecipes = await fetchRecipes();
+                const recipesArray = await fetchRecipes();
                 const sortedRecipes = recipesArray.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
                 setCurrentRecipes([...sortedRecipes]);
             } catch (error) {
@@ -38,8 +37,8 @@ export default function RecipeCard({ recipes }) {
         fetchData();
     }, []); // Empty dependency array means it runs only once on mount
 
-    //-------------------------------------REFACTORED DELETE - to a custom hook - able to use this hook in other components */
-    // Use the custom hook, passing the fetchRecipes function
+    /*--- DELETE recipe from the catalog --- */
+    // Use the custom hook, passing the function to set the current recipes
     const {
         showDelete,         //Hook returns the state of the modal popup - visible or not
         recipeToDelete,
@@ -49,9 +48,9 @@ export default function RecipeCard({ recipes }) {
         handleCloseDelete,  //Hook returns the function to handle closing the modal
         handleDelete,       //Hook returns the function to handle the api calls to delete the recipe 
     } = useDeletePopup(setCurrentRecipes);  // Pass fetchRecipes to the hook
-    //-------------------------------------REFACTORED DELETE */
+    /*--------------------------------*/
 
-    //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    /*---ADD a recipe to the catalog---*/
     const {
         newRecipe,
         setNewRecipe,
@@ -60,9 +59,9 @@ export default function RecipeCard({ recipes }) {
         handleShowAddRecipe,
         handleAddRecipe,
     } = useAddRecipePopup(setCurrentRecipes);
-    //-------------------------------------REFACTORED ADD */
+    /*--------------------------------*/
 
-    //-------------------------------------REFACTORED ADD - to a custom hook - able to use this hook in other components */
+    /*---UPDATE a recipe in the catalog---*/
     const {
         recipeToUpdate,
         showUpdateRecipe,
@@ -72,19 +71,19 @@ export default function RecipeCard({ recipes }) {
         handleUpdateRecipe,
         setUpdatedRecipe,
     } = useUpdateRecipePopup(setCurrentRecipes);
-    //-------------------------------------REFACTORED UPDATE */
+    /*--------------------------------*/
 
 
-    //-------------------------------------REFACTORED SHOW */
+    /*--- SHOW the recipe details---*/
     const {
         showRecipeDetails,
         selectedRecipe,
         handleShowRecipeDetails,
         handleCloseRecipeDetails,
     } = useRecipeDetailsPopup();
-    //-------------------------------------REFACTORED SHOW */
+    /*--------------------------------*/
 
-    //filter recipes based on search query 
+    // Filter recipes based on search query 
     const filteredRecipes = currentRecipes.filter(recipe =>
         recipe.recipe_title.toLowerCase().includes(searchQuery.toLowerCase())
     );

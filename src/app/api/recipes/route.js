@@ -4,9 +4,8 @@ import connectToDatabase from '@/lib/dbConnect.js'
 import Recipe from '@/models/recipe'
 import User from '@/models/user'
 
-//http://localhost:3000/api/recipes gets all the oders
+//http://localhost:3000/api/recipes gets all the recipes
 export async function GET(req) {
-  //console.log("Get recipes Recieved");
   await connectToDatabase();
 
   try {

@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import { fontCinzel, faunaOne } from '@/lib/fonts';
 
 function NavBar() {
     const pathname = usePathname(); // hook to check current path

@@ -2,7 +2,6 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/dbConnect.js'
 import MealPlan from '@/models/mealPlan';
 
-///api/mealplan/[user_id]/route.js
 export async function GET(req, { params }) {
     await connectToDatabase();
 

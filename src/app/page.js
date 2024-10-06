@@ -22,7 +22,9 @@ export default function Home() {
         <div>
           <h2 className={`${fontCinzel.className} sub-head center mt-5`}>Let's get planning</h2>
           <div className="center">
+          <Link href="/register" passHref style={{ textDecoration: 'none' }}>
             <Button className={`${faunaOne.className} center me-3 button-link intro-paragraph`} variant="dark">Sign Up</Button>
+            </Link>
             <Link href="/login" passHref style={{ textDecoration: 'none' }}>
               <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Login</Button>
             </Link>

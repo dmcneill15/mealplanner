@@ -4,26 +4,25 @@ import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
 import { fetchRecipes } from '@/app/api/recipesApi';
-import AddRecipePopup from './AddRecipePopup';
-import DeletePopup from './DeletePopup';
+import AddRecipePopup from '../AddRecipePopup';
+import DeletePopup from '../DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useMealPlan } from '@/hooks/useMealPlan';
 import { useDeletePopup } from '@/hooks/useDeletePopup';
 import Tooltip from '@mui/material/Tooltip';
 import AddIcon from '@mui/icons-material/Add';
 import { Button, Form } from 'react-bootstrap';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import { faunaOne, montega } from '@/lib/fonts';
 
 import { useState, useEffect, useRef } from 'react'
 
 
 export default function Calendar() {
-
-    //const userId = "66fb8efadbee721364a45c8c";          //use hardcoded id for now
-    const userId = '66f739adc717200fa34ac24b';
-    const [recipeList, setRecipeList] = useState([]);   //list of all users recipes
-    const [refresh, setRefresh] = useState(false);      //flag to refresh the calendar display
-    const [searchQuery, setSearchQuery] = useState(''); //state for search query
+       
+    const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
+    const [recipeList, setRecipeList] = useState([]);   // List of all users recipes
+    const [refresh, setRefresh] = useState(false);      // Flag to refresh the calendar display
+    const [searchQuery, setSearchQuery] = useState(''); // State for search query
 
     const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
@@ -32,16 +31,16 @@ export default function Calendar() {
         setRefresh(prev => !prev);
     };
 
-    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN - to a custom hook - able to use this hook in other components */
+    /*---ADD Recipe to Meal Plan Hook---*/
     const {
         recipeCalendar,
         addEvent,
         updateEvent,
         deleteRecipeFromMealPlan
     } = useMealPlan(userId);
-    //-------------------------------------REFACTORED ADD RECIPE TO MEALPLAN
+    /*--------------------------------*/
 
-    //-------------------------------------REFACTORED ADD RECIPE TO RECIPE CATALOG- to a custom hook - able to use this hook in other components */
+    /*---ADD Recipe to Catalog Hook---*/
     const {
         newRecipe,
         setNewRecipe,
@@ -50,8 +49,9 @@ export default function Calendar() {
         handleShowAddRecipe,
         handleAddRecipe,
     } = useAddRecipePopup(setRecipeList, forceRerender);
-    //-------------------------------------REFACTORED ADD */
+    /*--------------------------------*/
 
+    /*---DELETE Recipe from Meal Plan Hook---*/
     const {
         showDelete,
         recipeToDelete,
@@ -60,6 +60,7 @@ export default function Calendar() {
         handleShowDelete,
         handleCloseDelete,
     } = useDeletePopup();
+    /*--------------------------------*/
 
     // Fetch recipes when the component mounts to display list on the right hand side
     useEffect(() => {
@@ -78,7 +79,7 @@ export default function Calendar() {
         getRecipes();
     }, [refresh]);  //can't use recipeList here as it may cause infinte loop. Rather use a flag to refresh recipe display on calendar 
 
-    //filter recipes based on search query 
+    // Filter recipes based on search query 
     const filteredRecipes = recipeList.filter(recipe =>
         recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
     );
@@ -101,6 +102,7 @@ export default function Calendar() {
         }
     }, []);
 
+    // Handle adding external event/recipe to the calendar 
     const handleEventReceive = async (info) => {
         try {
             const dropInfo = {
@@ -115,6 +117,7 @@ export default function Calendar() {
         }
     };
 
+    // Handle the event when the recipe is dropped onto the calendar
     const handleEventDrop = async (info) => {
         try {
             await updateEvent(info);
@@ -125,6 +128,7 @@ export default function Calendar() {
         }
     };
 
+    // Handle what happens when a recipe on the calendar is clicked
     const handleEventClick = (info) => {
         const recipe = {
             id: info.event.id,
@@ -133,6 +137,7 @@ export default function Calendar() {
         handleShowDelete(recipe);
     };
 
+    // Handle removing the recipe from the meal plan
     const handleDeleteFromMealPlan = () => {
         deleteRecipeFromMealPlan(recipeToDelete, handleCloseDelete, setIsDeleting);
     };
@@ -140,7 +145,7 @@ export default function Calendar() {
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
-                <div style={styles.calendarContainer}>
+            <div style={styles.calendarContainer}>
                     <FullCalendar
                         ref={calendarRef}
                         headerToolbar={{
@@ -152,11 +157,9 @@ export default function Calendar() {
                         initialView="dayGridMonth"
                         timeZone="local"
                         events={recipeCalendar}
-                        //nowIndicator={true}
                         editable={true}
                         droppable={true}
                         selectable={true}
-                        //dateClick={handleDateClick}
                         eventReceive={handleEventReceive}   //handles when external recipe is added
                         eventDrop={handleEventDrop}         //handles when exisiting recipe is moved
                         eventClick={handleEventClick}       //handles removing the entry from the mealplan
@@ -204,11 +207,12 @@ export default function Calendar() {
                 setNewRecipe={setNewRecipe}
                 handleAddRecipe={handleAddRecipe}
             />
+            {/**DELETE RECIPE Modal Pop UP */}
             <DeletePopup
                 show={showDelete}
                 onHide={handleCloseDelete}
                 recipeTitle={recipeToDelete?.title}
-                handleDelete={handleDeleteFromMealPlan} // Use the new function for deleting meal plan entry
+                handleDelete={handleDeleteFromMealPlan}
                 isDeleting={isDeleting}
             />
         </div>
@@ -216,9 +220,8 @@ export default function Calendar() {
 };
 
 const styles = {
-    container: {
+   container: {
         display: 'flex',
-        //height: '100vh', // Full viewport height
         margin: '0 20px', // Equal margin on left and right
     },
     leftSide: {
@@ -227,7 +230,6 @@ const styles = {
         flexDirection: 'column', // Stack heading and calendar vertically
         justifyContent: 'flex-start', // Align items to the top
         alignItems: 'center',
-        //border: '2px solid blue', // Blue border instead of background
         padding: '10px', // Padding inside the border
         borderRadius: '10px', // Optional: rounded corners for the border
     },
@@ -245,22 +247,16 @@ const styles = {
         justifyContent: 'flex-start', // Align items to the top
         alignItems: 'center',
         color: 'black', // Text color for contrast
-        //border: '2px solid red',
-        //fontSize: '24px',
-        //fontWeight: 'bold',
         padding: '20px', // Optional padding for aesthetics
     },
     heading: {
         marginBottom: '20px', // Space below the heading
         textAlign: 'center', // Center the heading text
-        //fontSize: '20px', // Adjust font size as needed
     },
     content: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        //border: '2px solid red',
-        //height: '100%', // Fill the remaining space
         maxHeight: '500px', /* Adjust the height as needed to make a scrollable list*/
         overflowY: 'auto',
     },
