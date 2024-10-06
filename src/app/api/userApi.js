@@ -14,11 +14,11 @@ export const addUser = async (newUser) => {
             //console.log(response);
             return response.json();
         } else {
-            console.error('Failed to add user');
+           // console.error('Failed to add user');
             return response.json();
         }
     } catch (error) {
-        console.error('Error adding user:', error);
+        //console.error('Error adding user:', error);
         throw error;
     }
 };
