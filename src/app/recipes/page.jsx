@@ -2,6 +2,7 @@ import { options } from "@/app/api/auth/[...nextauth]/options"
 import { getServerSession } from "next-auth/next";
 import RecipeCard from '@/components/RecipeCard';
 import { montega } from '@/lib/fonts';
+import connectToDatabase from '@/lib/dbConnect';
 
 export default async function Recipes() {
     await connectToDatabase();

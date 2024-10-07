@@ -22,8 +22,8 @@ function ProfileCard({ user }) {
                             <a className={`${faunaOne.className} center custom-btn btn btn-outline-dark`} onClick={() => handleAction(user.username)}>Update</a>
                         </ListGroup.Item>
                         <ListGroup.Item className={`${faunaOne.className} d-flex justify-content-between align-items-center`}>
-                            Email: {user.email}
-                            <a className={`${faunaOne.className} center custom-btn btn btn-outline-dark`} onClick={() => handleAction(user.email)}>Update</a>
+                            Email: {user.email_id}
+                            <a className={`${faunaOne.className} center custom-btn btn btn-outline-dark`} onClick={() => handleAction(user.email_id)}>Update</a>
                         </ListGroup.Item>
                         <ListGroup.Item className={`${faunaOne.className} d-flex justify-content-between align-items-center`}>
                             Password: {'*'.repeat(user?.password?.length || 0)} {/* Display asterisks for length of password */}
