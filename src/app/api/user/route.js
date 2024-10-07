@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/dbConnect.js'
 import User from '@/models/user'
 
-//POST to register a user
+//POST to register/add a user
 export async function POST(req) {
     await connectToDatabase();
 
