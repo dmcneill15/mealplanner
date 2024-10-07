@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
-import { fetchRecipes } from '@/app/api/recipesApi';
+import { fetchRecipes, fetchUserRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from '../AddRecipePopup';
 import DeletePopup from '../DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
@@ -17,9 +17,10 @@ import { faunaOne, montega } from '@/lib/fonts';
 import { useState, useEffect, useRef } from 'react'
 
 
-export default function Calendar() {
+export default function Calendar({user}) {
        
-    const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
+    //const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
+    const user_id = user._id;
     const [recipeList, setRecipeList] = useState([]);   // List of all users recipes
     const [refresh, setRefresh] = useState(false);      // Flag to refresh the calendar display
     const [searchQuery, setSearchQuery] = useState(''); // State for search query
@@ -37,7 +38,7 @@ export default function Calendar() {
         addEvent,
         updateEvent,
         deleteRecipeFromMealPlan
-    } = useMealPlan(userId);
+    } = useMealPlan(user_id);
     /*--------------------------------*/
 
     /*---ADD Recipe to Catalog Hook---*/
@@ -66,7 +67,8 @@ export default function Calendar() {
     useEffect(() => {
         const getRecipes = async () => {
             try {
-                const recipes = await fetchRecipes();
+                //const recipes = await fetchRecipes();
+                const recipes = await fetchUserRecipes(user_id);
                 const formattedRecipes = recipes.map(recipe => ({
                     title: recipe.recipe_title,
                     id: recipe.recipe_id,

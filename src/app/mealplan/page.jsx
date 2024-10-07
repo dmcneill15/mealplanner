@@ -1,7 +1,16 @@
+import { options } from "@/app/api/auth/[...nextauth]/options"
+import { getServerSession } from "next-auth/next";
 import Calendar from '@/components/Calendar/Calendar';
 import { faunaOne, montega } from '@/lib/fonts';
+import connectToDatabase from '@/lib/dbConnect';
 
-export default async function Recipes() {
+export default async function MealPlan() {
+    await connectToDatabase();
+    
+    const session = await getServerSession(options);
+    // Log the session object to the console
+    console.log("Session:", session);
+
     return (
         <main>
             <section>
@@ -13,7 +22,13 @@ export default async function Recipes() {
                     <p className={`${faunaOne.className} mb-3 center intro-paragraph`}>Delete: Click a meal on the calendar</p>
                 </div>
             </section><br></br>
-            <Calendar />
+            <section>
+                {session ? (
+                    <Calendar user={session?.user}/>
+                ) : (
+                    <p>Please Login to access this page</p>
+                )}
+            </section>
         </main>
     )
 }

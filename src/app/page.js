@@ -1,7 +1,7 @@
 'use client'
 import { Button } from 'react-bootstrap';
 import Link from 'next/link';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 export default function Home() {
   return (

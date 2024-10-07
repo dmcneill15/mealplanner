@@ -4,9 +4,8 @@ import RecipeCard from '@/components/RecipeCard';
 import { montega } from '@/lib/fonts';
 
 export default async function Recipes() {
+    await connectToDatabase();
     const session = await getServerSession(options);
-    // Log the session object to the console
-    console.log("Session:", session);
 
     return (
         <main>
