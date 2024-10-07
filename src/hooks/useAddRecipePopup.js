@@ -18,7 +18,6 @@ export const useAddRecipePopup = (setCurrentRecipes, user_id) => {
 
         try {
             await addRecipe(newRecipe, user_id);
-            //const updatedRecipes = await fetchRecipes();
             const updatedRecipes = await fetchUserRecipes(user_id);
             const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
             setCurrentRecipes(sortedRecipes);

@@ -4,7 +4,7 @@ import { addRecipeToMealPlan, getUserMealPlan, updateRecipeInMealPlan, deleteMea
 
 export function useMealPlan(user_id) {
     const [recipeCalendar, setRecipeCalendar] = useState([]);
-
+    
     useEffect(() => {
         const fetchMealPlan = async () => {
             try {

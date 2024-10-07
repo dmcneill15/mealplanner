@@ -22,7 +22,7 @@ export const options = {
             async authorize(credentials) {
                 await connectToDatabase();
 
-                console.log(credentials);
+                //console.log(credentials);
                 const user = await User.findOne({
                     email_id: credentials?.email,
                 });

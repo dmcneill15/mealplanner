@@ -11,4 +11,4 @@ export default withAuth({
     },
 });
 
-export const config = { matcher: ['/profile'] };
+export const config = { matcher: ['/profile', '/mealplan', '/recipes'] };
