@@ -1,12 +1,31 @@
 'use client' // client component, not server rendered
+import { useState } from 'react';
 import { usePathname } from 'next/navigation'
 import Container from 'react-bootstrap/Container';
 import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { fontCinzel, faunaOne } from '@/lib/fonts';
+import LogoutIcon from '@mui/icons-material/Logout';
+import Tooltip from '@mui/material/Tooltip';
+import { signOut } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function NavBar() {
     const pathname = usePathname(); // Hook to check current active path
+    const router = useRouter();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    const handleLogout = async () => {
+        setIsLoggingOut(true);
+        try {
+            await signOut({ redirect: false });
+            router.push('/'); // Redirect to home page after logout
+        } catch (error) {
+            console.error('Error logging out:', error);
+        } finally {
+            setIsLoggingOut(false); // Reset state to false after logout
+        }
+    };
 
     return (
         <div className={`mb-4 `}>
@@ -16,7 +35,7 @@ function NavBar() {
             </header>
 
             <br></br>
-            <Navbar collapseOnSelect  className="mb-0">
+            <Navbar collapseOnSelect className="mb-0">
                 <Container>
                     <Navbar.Toggle aria-controls="responsive-navbar-nav" />
                     <Navbar.Collapse id="responsive-navbar-nav">
@@ -27,6 +46,11 @@ function NavBar() {
                         </Nav>
                         <Nav>
                             <Nav.Link href="/profile" className={`${faunaOne.className} nav-link ${pathname === '/profile' ? 'active' : ''}`}>Profile</Nav.Link>
+                            <Tooltip title="Logout" arrow>
+                                <Nav.Link className={`btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button ${isLoggingOut ? 'disabled' : ''}`}
+                                    onClick={() => handleLogout()}>
+                                    <LogoutIcon className='custom-icon' /></Nav.Link>
+                            </Tooltip>
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
