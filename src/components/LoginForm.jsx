@@ -1,21 +1,59 @@
 'use client' // client component, not server rendered
-import { Container, Card, Button, Form } from 'react-bootstrap';
+import { Container, Card, Button, Form, Alert } from 'react-bootstrap';
 import { faunaOne } from '@/lib/fonts';
+import {  useState } from "react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 function LoginForm() {
 
+    const [formData, setFormData] = useState({ email: '', password: '' }); // Use a plain object for form data
+    const [message, setMessage] = useState(null); // Message to display success or failed login
+    const [variant, setVariant] = useState(''); // 'success' or 'danger'
+    const router = useRouter(); // Router to redirect to home page on successful login
+
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData((prevData) => ({ ...prevData, [name]: value })); // Update form data state
+    };
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            const result = await signIn("credentials", {
+                email: formData.email,
+                password: formData.password,
+                redirect: false,
+            });
+            if (result.ok) {
+                setMessage('Success! Redirecting to profile page...');
+                setVariant('success');
+                setTimeout(() => {
+                    router.push('/profile');
+                }, 1000); // Redirect to profile page after 1 second
+            } else {
+                setMessage('Error: ' + result.error);
+                setVariant('danger');
+            }
+        } catch (error) {
+            setMessage('Error: ' + error.message);
+            setVariant('danger');
+        }
+    };
+
     return (
         <Container className="mt-4">
-            <Card  className='transparent-bg' style={{ width: '400px', margin: 'auto', border: "none", background: 'transparent'}}>
-                <Form>
+            <Card className='transparent-bg' style={{ width: '400px', margin: 'auto', border: "none", background: 'transparent' }}>
+                <Form onSubmit={handleSubmit}>
+                    {message && <Alert variant={variant}>{message}</Alert>}
                     <Form.Group className="mb-3" controlId="formBasicEmail">
                         <Form.Label className={`${faunaOne.className} intro-paragraph`}>Email address</Form.Label>
-                        <Form.Control type="email" placeholder="Enter email" />
+                        <Form.Control type="email" placeholder="Enter email" name="email" value={formData.email} onChange={handleChange} />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicPassword">
                         <Form.Label className={`${faunaOne.className} intro-paragraph`}>Password</Form.Label>
-                        <Form.Control type="password" placeholder="Password" />
+                        <Form.Control type="password" placeholder="Password" name="password" value={formData.password} onChange={handleChange} />
                     </Form.Group>
                     <Button className={`${faunaOne.className} center button-link`} variant="dark" type='submit'>Login</Button>
                 </Form>

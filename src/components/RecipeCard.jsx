@@ -6,7 +6,7 @@ import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Tooltip from '@mui/material/Tooltip';
 
-import { fetchRecipes } from '@/app/api/recipesApi'
+import { fetchRecipes, fetchUserRecipes } from '@/app/api/recipesApi'
 import DeletePopup from './DeletePopup';
 import { useDeletePopup } from '@/hooks/useDeletePopup';    //custom hook to handle delete popup
 import RecipeDetailsPopup from './RecipeDetailsPopup';
@@ -18,15 +18,20 @@ import { useUpdateRecipePopup } from '@/hooks/useUpdateRecipePopup';
 import { fontCinzel, faunaOne } from '@/lib/fonts';
 
 
-export default function RecipeCard({ recipes }) {
+export default function RecipeCard({ recipes, user }) {
     const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    // Set initial state to recipes passed in or set to empty if no recipe data
     const [searchQuery, setSearchQuery] = useState('');                     // State for search query
+
+    //const user_id = '66f739adc717200fa34ac24c';
+    //const user_id = '66fb8efadbee721364a45c8d';
+    const user_id = user._id;
 
     // Use useEffect to fetch recipes when the component mounts
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const recipesArray = await fetchRecipes();
+                //const recipesArray = await fetchRecipes();
+                const recipesArray = await fetchUserRecipes(user_id);
                 const sortedRecipes = recipesArray.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
                 setCurrentRecipes([...sortedRecipes]);
             } catch (error) {
@@ -47,7 +52,7 @@ export default function RecipeCard({ recipes }) {
         handleShowDelete,   //Hook returns the function to trigger displaying the modal
         handleCloseDelete,  //Hook returns the function to handle closing the modal
         handleDelete,       //Hook returns the function to handle the api calls to delete the recipe 
-    } = useDeletePopup(setCurrentRecipes);  // Pass fetchRecipes to the hook
+    } = useDeletePopup(setCurrentRecipes, user_id);  // Pass fetchRecipes to the hook
     /*--------------------------------*/
 
     /*---ADD a recipe to the catalog---*/
@@ -58,7 +63,7 @@ export default function RecipeCard({ recipes }) {
         handleCloseAddRecipe,
         handleShowAddRecipe,
         handleAddRecipe,
-    } = useAddRecipePopup(setCurrentRecipes);
+    } = useAddRecipePopup(setCurrentRecipes, user_id);
     /*--------------------------------*/
 
     /*---UPDATE a recipe in the catalog---*/
@@ -70,7 +75,7 @@ export default function RecipeCard({ recipes }) {
         handleShowUpdateRecipe,
         handleUpdateRecipe,
         setUpdatedRecipe,
-    } = useUpdateRecipePopup(setCurrentRecipes);
+    } = useUpdateRecipePopup(setCurrentRecipes, user_id);
     /*--------------------------------*/
 
 

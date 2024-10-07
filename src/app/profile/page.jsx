@@ -1,32 +1,19 @@
+import { options } from "@/app/api/auth/[...nextauth]/options"
+import { getServerSession } from "next-auth/next";
 import ProfileCard from '@/components/ProfileCard';
 
-export default function Profiles() {
-    const userData = [
-       {
-            user_id: 1,
-            user_name: 'userNameTest1',
-            email: 'user@name.com',
-            password: 'password',
-            profile_picture: '#',
-        },
-    ]
-
-    let usersJSX;
-    try{
-        const user = userData[0];
-        usersJSX = <ProfileCard user={user}></ProfileCard>
-    }
-    catch(error){
-        usersJSX = <span>Unable to Fetch User</span>
-    }
+export default async function Profile() {
+    const session = await getServerSession(options);
 
     return (
         <main>
             <section>
-                <div className="title-container">
-                </div>
+                {session ? (
+                    <ProfileCard user={session?.user} />
+                ) : (
+                    <p>Please Login to access this page</p>
+                )}
             </section>
-            {usersJSX}
         </main>
     )
 }

@@ -2,13 +2,13 @@ import { useState, useEffect } from 'react';
 import { addRecipeToMealPlan, getUserMealPlan, updateRecipeInMealPlan, deleteMealPlanEntry } from '../app/api/mealplanApi';
 
 
-export function useMealPlan(userId) {
+export function useMealPlan(user_id) {
     const [recipeCalendar, setRecipeCalendar] = useState([]);
-
+    
     useEffect(() => {
         const fetchMealPlan = async () => {
             try {
-                const mealPlan = await getUserMealPlan(userId);
+                const mealPlan = await getUserMealPlan(user_id);
                 if (mealPlan.data && Array.isArray(mealPlan.data)) {
                     const formattedEvents = mealPlan.data.map(item => ({
                         title: item.title,
@@ -25,7 +25,7 @@ export function useMealPlan(userId) {
             }
         };
         fetchMealPlan();
-    }, [userId]);
+    }, [user_id]);
 
     const addEvent = async (data) => {
         if (!data || !data.draggedEl) {
@@ -43,7 +43,7 @@ export function useMealPlan(userId) {
         }
 
         const newMealPlanEntry = {
-            user_id: userId,
+            user_id: user_id,
             recipe_id: recipeId,
             date: date.toISOString(),
             title: title

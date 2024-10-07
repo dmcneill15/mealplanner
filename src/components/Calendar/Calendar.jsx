@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
-import { fetchRecipes } from '@/app/api/recipesApi';
+import { fetchRecipes, fetchUserRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from '../AddRecipePopup';
 import DeletePopup from '../DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
@@ -17,12 +17,14 @@ import { faunaOne, montega } from '@/lib/fonts';
 import { useState, useEffect, useRef } from 'react'
 
 
-export default function Calendar() {
-       
-    const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
+export default function Calendar({ user }) {
+
+    //const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
+    const user_id = user._id;
     const [recipeList, setRecipeList] = useState([]);   // List of all users recipes
     const [refresh, setRefresh] = useState(false);      // Flag to refresh the calendar display
     const [searchQuery, setSearchQuery] = useState(''); // State for search query
+    const [loading, setLoading] = useState(true);
 
     const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
@@ -37,7 +39,7 @@ export default function Calendar() {
         addEvent,
         updateEvent,
         deleteRecipeFromMealPlan
-    } = useMealPlan(userId);
+    } = useMealPlan(user_id);
     /*--------------------------------*/
 
     /*---ADD Recipe to Catalog Hook---*/
@@ -48,7 +50,7 @@ export default function Calendar() {
         handleCloseAddRecipe,
         handleShowAddRecipe,
         handleAddRecipe,
-    } = useAddRecipePopup(setRecipeList, forceRerender);
+    } = useAddRecipePopup(setRecipeList, user_id);
     /*--------------------------------*/
 
     /*---DELETE Recipe from Meal Plan Hook---*/
@@ -66,22 +68,26 @@ export default function Calendar() {
     useEffect(() => {
         const getRecipes = async () => {
             try {
-                const recipes = await fetchRecipes();
+                setLoading(true);
+                const recipes = await fetchUserRecipes(user_id);
                 const formattedRecipes = recipes.map(recipe => ({
-                    title: recipe.recipe_title,
+                    recipe_title: recipe.recipe_title,
                     id: recipe.recipe_id,
-                })).sort((a, b) => a.title.localeCompare(b.title)); //Sort alphabetically
+                })).sort((a, b) => a.recipe_title.localeCompare(b.title)); //Sort alphabetically
                 setRecipeList(formattedRecipes);
             } catch (error) {
                 console.error('Error fetching recipes:', error);
+            } finally {
+                setLoading(false);
             }
         };
         getRecipes();
     }, [refresh]);  //can't use recipeList here as it may cause infinte loop. Rather use a flag to refresh recipe display on calendar 
 
+
     // Filter recipes based on search query 
     const filteredRecipes = recipeList.filter(recipe =>
-        recipe.title.toLowerCase().includes(searchQuery.toLowerCase())
+        recipe.recipe_title.toLowerCase().includes(searchQuery.toLowerCase())
     );
 
 
@@ -145,7 +151,7 @@ export default function Calendar() {
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
-            <div style={styles.calendarContainer}>
+                <div style={styles.calendarContainer}>
                     <FullCalendar
                         ref={calendarRef}
                         headerToolbar={{
@@ -186,17 +192,21 @@ export default function Calendar() {
                     </Tooltip>
                 </div>
                 <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
-                    {filteredRecipes.map(recipe => (
-                        <div
-                            className={`${faunaOne.className} fc-event center mb-2`}
-                            title={recipe.title}
-                            data-id={recipe.id}
-                            key={recipe.id}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            {recipe.title}
-                        </div>
-                    ))}
+                    {loading ? (
+                        <p>Loading recipes...</p>
+                    ) : (
+                        filteredRecipes.map(recipe => (
+                            <div
+                                className={`${faunaOne.className} fc-event center mb-2`}
+                                title={recipe.recipe_title}
+                                data-id={recipe.id}
+                                key={recipe.id}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                {recipe.recipe_title}
+                            </div>
+                        ))
+                    )}
                 </div>
             </div>
             {/**ADD RECIPE Modal Pop UP */}
@@ -220,7 +230,7 @@ export default function Calendar() {
 };
 
 const styles = {
-   container: {
+    container: {
         display: 'flex',
         margin: '0 20px', // Equal margin on left and right
     },

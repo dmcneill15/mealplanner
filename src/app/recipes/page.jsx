@@ -1,7 +1,13 @@
+import { options } from "@/app/api/auth/[...nextauth]/options"
+import { getServerSession } from "next-auth/next";
 import RecipeCard from '@/components/RecipeCard';
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import { montega } from '@/lib/fonts';
+import connectToDatabase from '@/lib/dbConnect';
 
 export default async function Recipes() {
+    await connectToDatabase();
+    const session = await getServerSession(options);
+
     return (
         <main>
             <section>
@@ -9,7 +15,13 @@ export default async function Recipes() {
                     <h2 className={`${montega.className} title center sub-head`}>Your Recipe Catalog</h2>
                 </div>
             </section>
-            <RecipeCard />
+            <section>
+                {session ? (
+                    <RecipeCard user={session?.user}/>
+                ) : (
+                    <p>Please Login to access this page</p>
+                )}
+            </section>
         </main>
     )
 }

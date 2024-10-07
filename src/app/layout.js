@@ -2,8 +2,7 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import "./globals.css";
 import NavBar from '@/components/NavBar'
 import Footer from '@/components/Footer'
-import { ebGaramond, fontCinzel, faunaOne, montega } from '@/lib/fonts';
-import { Container } from 'react-bootstrap';
+import { Provider } from "./provider";
 
 export const metadata = {
   title: "Plan to Plate",
@@ -13,13 +12,15 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body>
-        <div className="content-background">
-          <NavBar />
-          <main className="content">{children}</main>
-          <Footer />
-        </div>
-      </body>
+      <Provider>
+        <body>
+          <div className="content-background">
+            <NavBar />
+            <main className="content">{children}</main>
+            <Footer />
+          </div>
+        </body>
+      </Provider>
     </html>
   );
 }

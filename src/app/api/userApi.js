@@ -21,4 +21,4 @@ export const addUser = async (newUser) => {
         //console.error('Error adding user:', error);
         throw error;
     }
-};
+}; 

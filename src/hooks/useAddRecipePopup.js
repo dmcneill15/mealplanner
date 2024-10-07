@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { addRecipe, fetchRecipes } from '../app/api/recipesApi';
+import { addRecipe, fetchRecipes, fetchUserRecipes } from '../app/api/recipesApi';
 
-export const useAddRecipePopup = (setCurrentRecipes) => {
+export const useAddRecipePopup = (setCurrentRecipes, user_id) => {
     
     const [newRecipe, setNewRecipe] = useState({recipe_title: '', method: '', servings: '', image: '',});
     const [showAddRecipe, setShowAddRecipe] = useState(false);
@@ -17,8 +17,8 @@ export const useAddRecipePopup = (setCurrentRecipes) => {
         e.preventDefault(); // Prevent the browser from refreshing when handling the form
 
         try {
-            await addRecipe(newRecipe);
-            const updatedRecipes = await fetchRecipes();
+            await addRecipe(newRecipe, user_id);
+            const updatedRecipes = await fetchUserRecipes(user_id);
             const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
             setCurrentRecipes(sortedRecipes);
         } catch (error) {
