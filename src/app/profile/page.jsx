@@ -1,7 +1,9 @@
+import { options } from "@/app/api/auth/[...nextauth]/options"
+import { getServerSession } from "next-auth/next";
 import ProfileCard from '@/components/ProfileCard';
 
-export default function Profiles() {
-    const userData = [
+export default async function Profile() {
+    /*const userData = [
        {
             user_id: 1,
             user_name: 'userNameTest1',
@@ -27,6 +29,22 @@ export default function Profiles() {
                 </div>
             </section>
             {usersJSX}
+        </main>
+    )*/
+
+    const session = await getServerSession(options);
+    // Log the session object to the console
+    console.log("Session:", session);
+
+    return (
+        <main>
+            <section>
+                {session ? (
+                    <ProfileCard user={session?.user} />
+                ) : (
+                    <p>Please Login</p>
+                )}
+            </section>
         </main>
     )
 }
