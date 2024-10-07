@@ -22,19 +22,24 @@ export async function POST(req) {
   await connectToDatabase();
 
   try {
+    /*const body = await req.json();
+    const user = await User.findOne({ user_id: body.user_id });*/
     const body = await req.json();
-    const user = await User.findOne({ user_id: body.user_id });
+    const { user_id, ...recipeData } = body;
+
+    // Find the user by user_id
+    const user = await User.findById(user_id);
 
     if (user) {
       const newRecipe = new Recipe({
-        ...body,
-        // user_id: user._id // Link the recipe to the user if needed
+        ...recipeData,
+        user_id: user._id
       });
 
       const savedRecipe = await newRecipe.save();
       return NextResponse.json({ result: 200, data: savedRecipe }, { status: 200 });
     } else {
-      return NextResponse.json({ result: 404, message: 'User not found - Ghost cannot create recipe' }, { status: 404 });
+      return NextResponse.json({ result: 404, message: 'User not found' }, { status: 404 });
     }
   } catch (err) {
     console.error(err);

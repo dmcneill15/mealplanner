@@ -1,7 +1,7 @@
 import { useState } from 'react';
-import { updateRecipe, fetchRecipes } from '../app/api/recipesApi';
+import { updateRecipe, fetchRecipes, fetchUserRecipes } from '../app/api/recipesApi';
 
-export const useUpdateRecipePopup = (setCurrentRecipes) => {
+export const useUpdateRecipePopup = (setCurrentRecipes,user_id) => {
     const [recipeToUpdate, setRecipeToUpdate] = useState('');
     const [showUpdateRecipe, setShowUpdateRecipe] = useState(false);
     const [updatedRecipe, setUpdatedRecipe] = useState({ recipe_title: '', method: '', servings: '', image: '' });
@@ -34,7 +34,8 @@ export const useUpdateRecipePopup = (setCurrentRecipes) => {
 
         try {
             await updateRecipe(recipeToUpdate._id, recipeUpdates); // Call the API function
-            const updatedRecipes = await fetchRecipes();
+            //const updatedRecipes = await fetchRecipes();
+            const updatedRecipes = await fetchUserRecipes(user_id);
             const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
             setCurrentRecipes([...sortedRecipes]);
 

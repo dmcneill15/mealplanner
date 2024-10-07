@@ -42,7 +42,7 @@ export default async function Profile() {
                 {session ? (
                     <ProfileCard user={session?.user} />
                 ) : (
-                    <p>Please Login</p>
+                    <p>Please Login to access this page</p>
                 )}
             </section>
         </main>
