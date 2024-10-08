@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { deleteRecipe, fetchRecipes, fetchUserRecipes } from '../app/api/recipesApi';
+import { deleteRecipe, fetchUserRecipes } from '../app/api/recipesApi';
 
 export const useDeletePopup = (setCurrentRecipes,user_id) => {
     const [showDelete, setShowDelete] = useState(false);
@@ -19,9 +19,8 @@ export const useDeletePopup = (setCurrentRecipes,user_id) => {
         setRecipeTitle('');
     };
 
-    const onDeleteSuccess = () => {
-        //fetchRecipes();     	            // Fetch recipes after the delete is successful
-        fetchUserRecipes(user_id);
+    const onDeleteSuccess = () => {           
+        fetchUserRecipes(user_id);   // Fetch recipes after the delete is successful
         handleCloseDelete();
     };
 
@@ -35,7 +34,6 @@ export const useDeletePopup = (setCurrentRecipes,user_id) => {
         setIsDeleting(false);
 
         if (result.success) {
-            //const updatedRecipes = await fetchRecipes();
             const updatedRecipes = await fetchUserRecipes(user_id);
             const sortedRecipes = updatedRecipes.sort((a, b) => a.recipe_title.localeCompare(b.recipe_title)); // Sort alphabetically
             setCurrentRecipes([...sortedRecipes]);

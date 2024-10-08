@@ -1,6 +1,6 @@
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const UpdateRecipePopup = ({ show, onHide, handleUpdateRecipe, updatedRecipe, setUpdatedRecipe }) => {
+const UpdateRecipePopup = ({ show, onHide, handleUpdateRecipe, updatedRecipe, setUpdatedRecipe, isUpdating }) => {
     return (
         <Modal show={show} onHide={onHide}>
             <Modal.Header closeButton>
@@ -48,8 +48,8 @@ const UpdateRecipePopup = ({ show, onHide, handleUpdateRecipe, updatedRecipe, se
                     onChange={(e) => setUpdatedRecipe({ ...updatedRecipe, image: e.target.value })}
                 />
             </Form.Group> */}
-                    <Button className={`button-link mt-3`} variant="outline-dark" type="submit">
-                        Update Recipe
+                    <Button className={`button-link mt-3`} variant="outline-dark" type="submit" disabled={isUpdating}>
+                        {isUpdating ? 'Updating...' : 'Update'}
                     </Button>
                 </Form>
             </Modal.Body>

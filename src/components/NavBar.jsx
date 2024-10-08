@@ -65,12 +65,3 @@ function NavBar() {
     )
 }
 export default NavBar
-
-/*<Nav>
-                            <Nav.Link href="/profile" className={`${faunaOne.className} nav-link ${pathname === '/profile' ? 'active' : ''}`}>Profile</Nav.Link>
-                            <Tooltip title="Logout" arrow>
-                                <Nav.Link className={`btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button ${isLoggingOut ? 'disabled' : ''}`}
-                                    onClick={() => handleLogout()}>
-                                    <LogoutIcon className='custom-icon' /></Nav.Link>
-                            </Tooltip>
-                        </Nav> */

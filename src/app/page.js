@@ -1,9 +1,16 @@
 'use client'
 import { Button } from 'react-bootstrap';
 import Link from 'next/link';
+import { useSession } from "next-auth/react";
 import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
 export default function Home() {
+  const { data: session,status } = useSession(); // Check if there is an active session to conditionally render buttons
+
+    if (status === 'loading') {
+      return null; // Or add a loading spinner here
+    }
+      
   return (
     <main>
       <section>
@@ -22,15 +29,31 @@ export default function Home() {
         <div>
           <h2 className={`${fontCinzel.className} sub-head center mt-5`}>Let's get planning</h2>
           <div className="center">
-          <Link href="/register" passHref style={{ textDecoration: 'none' }}>
-            <Button className={`${faunaOne.className} center me-3 button-link intro-paragraph`} variant="dark">Sign Up</Button>
-            </Link>
-            <Link href="/login" passHref style={{ textDecoration: 'none' }}>
-              <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Login</Button>
-            </Link>
+            {session ? (
+              <Link href="/mealplan" passHref style={{ textDecoration: 'none' }}>
+                <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Head to Meal Plan</Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/register" passHref style={{ textDecoration: 'none' }}>
+                  <Button className={`${faunaOne.className} center me-3 button-link intro-paragraph`} variant="dark">Sign Up</Button>
+                </Link>
+                <Link href="/login" passHref style={{ textDecoration: 'none' }}>
+                  <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Login</Button>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </section>
     </main>
   );
 }
+
+
+/*<Link href="/register" passHref style={{ textDecoration: 'none' }}>
+            <Button className={`${faunaOne.className} center me-3 button-link intro-paragraph`} variant="dark">Sign Up</Button>
+            </Link>
+            <Link href="/login" passHref style={{ textDecoration: 'none' }}>
+              <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Login</Button>
+            </Link> */
