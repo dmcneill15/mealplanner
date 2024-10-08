@@ -1,14 +1,28 @@
 'use client'
+import { useSession } from "next-auth/react";
+import { useState, useEffect } from "react";
 import { Card, Container, ListGroup } from 'react-bootstrap';
 import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
 
-function ProfileCard({ user }) {
+function ProfileCard() {
+    const { data: session, status } = useSession(); // Use the status of the active session to display loading wheel if still busy loading
+    const [loading, setLoading] = useState(true);
 
     const handleAction = (item) => {
         console.log(`Action for ${item} clicked`);
         // Add action handling button logic here
     };
 
+    useEffect(() => {
+        if (status === 'authenticated') {
+            setLoading(false);
+        }
+    }, [status]);
+
+    const user = session?.user; // Get the current user from the session
+    if (!user) {
+        return <p>No user information available. Please log in.</p>; // Handle case where user is not available
+    }
 
     return (
         <Container>
