@@ -8,7 +8,7 @@ export default function Home() {
   const { data: session,status } = useSession(); // Check if there is an active session to conditionally render buttons
 
     if (status === 'loading') {
-      return null; // Or add a loading spinner here
+      return null;
     }
       
   return (
@@ -49,11 +49,3 @@ export default function Home() {
     </main>
   );
 }
-
-
-/*<Link href="/register" passHref style={{ textDecoration: 'none' }}>
-            <Button className={`${faunaOne.className} center me-3 button-link intro-paragraph`} variant="dark">Sign Up</Button>
-            </Link>
-            <Link href="/login" passHref style={{ textDecoration: 'none' }}>
-              <Button className={`${faunaOne.className} center button-link intro-paragraph`} variant="dark">Login</Button>
-            </Link> */

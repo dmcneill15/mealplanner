@@ -1,12 +1,14 @@
 'use client' // client component, not server rendered
 import { useState, useEffect } from 'react';
+import { useSession } from "next-auth/react";
 import { Card, Col, Row, Container, Button, Form } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Tooltip from '@mui/material/Tooltip';
+import { Spinner } from 'react-bootstrap';
 
-import { fetchRecipes, fetchUserRecipes } from '@/app/api/recipesApi'
+import { fetchUserRecipes } from '@/app/api/recipesApi'
 import DeletePopup from './DeletePopup';
 import { useDeletePopup } from '@/hooks/useDeletePopup';    //custom hook to handle delete popup
 import RecipeDetailsPopup from './RecipeDetailsPopup';
@@ -19,6 +21,8 @@ import { fontCinzel, faunaOne } from '@/lib/fonts';
 
 
 export default function RecipeCard({ recipes, user }) {
+    const { data: session, status } = useSession(); // Use the status of the active session to display loading wheel if still busy loading
+
     const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    // Set initial state to recipes passed in or set to empty if no recipe data
     const [searchQuery, setSearchQuery] = useState('');                     // State for search query
     const user_id = user._id;
@@ -91,6 +95,16 @@ export default function RecipeCard({ recipes, user }) {
     const filteredRecipes = currentRecipes.filter(recipe =>
         recipe.recipe_title.toLowerCase().includes(searchQuery.toLowerCase())
     );
+
+    if (status === 'loading') {
+        return (
+          <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        );
+      }
 
     return (
         <>
