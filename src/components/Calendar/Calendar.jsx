@@ -47,6 +47,7 @@ export default function Calendar({ user }) {
         newRecipe,
         setNewRecipe,
         showAddRecipe,
+        isAdding,
         handleCloseAddRecipe,
         handleShowAddRecipe,
         handleAddRecipe,
@@ -216,6 +217,7 @@ export default function Calendar({ user }) {
                 newRecipe={newRecipe}
                 setNewRecipe={setNewRecipe}
                 handleAddRecipe={handleAddRecipe}
+                isAdding={isAdding}
             />
             {/**DELETE RECIPE Modal Pop UP */}
             <DeletePopup

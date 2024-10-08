@@ -37,7 +37,7 @@ export default function RecipeCard({ recipes, user }) {
         };
 
         fetchData();
-    }, ); // Empty dependency array means it runs only once on mount
+    }, []); // Empty dependency array means it runs only once on mount
 
     /*--- DELETE recipe from the catalog --- */
     // Use the custom hook, passing the function to set the current recipes
@@ -57,6 +57,7 @@ export default function RecipeCard({ recipes, user }) {
         newRecipe,
         setNewRecipe,
         showAddRecipe,
+        isAdding,
         handleCloseAddRecipe,
         handleShowAddRecipe,
         handleAddRecipe,
@@ -174,6 +175,7 @@ export default function RecipeCard({ recipes, user }) {
                 newRecipe={newRecipe}
                 setNewRecipe={setNewRecipe}
                 handleAddRecipe={handleAddRecipe}
+                isAdding={isAdding}
             />
 
             {/**UPDATE RECIPE Modal Pop UP */}

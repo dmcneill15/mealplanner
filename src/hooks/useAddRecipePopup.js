@@ -5,6 +5,7 @@ export const useAddRecipePopup = (setCurrentRecipes, user_id) => {
     
     const [newRecipe, setNewRecipe] = useState({recipe_title: '', method: '', servings: '', image: '',});
     const [showAddRecipe, setShowAddRecipe] = useState(false);
+    const [isAdding, setIsAdding] = useState(false);
 
     const handleCloseAddRecipe = () => {
         setShowAddRecipe(false);
@@ -15,6 +16,7 @@ export const useAddRecipePopup = (setCurrentRecipes, user_id) => {
 
     const handleAddRecipe = async (e) => {
         e.preventDefault(); // Prevent the browser from refreshing when handling the form
+        setIsAdding(true);
 
         try {
             await addRecipe(newRecipe, user_id);
@@ -24,6 +26,7 @@ export const useAddRecipePopup = (setCurrentRecipes, user_id) => {
         } catch (error) {
             console.error('Error adding recipe:', error);
         } finally {
+            setIsAdding(false);
             handleCloseAddRecipe();
         }
     };
@@ -32,6 +35,7 @@ export const useAddRecipePopup = (setCurrentRecipes, user_id) => {
         newRecipe,
         setNewRecipe,
         showAddRecipe,
+        isAdding,
         handleCloseAddRecipe,
         handleShowAddRecipe,
         handleAddRecipe,
