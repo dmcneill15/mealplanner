@@ -6,14 +6,15 @@ import Nav from 'react-bootstrap/Nav';
 import Navbar from 'react-bootstrap/Navbar';
 import { fontCinzel, faunaOne } from '@/lib/fonts';
 import LogoutIcon from '@mui/icons-material/Logout';
-import Tooltip from '@mui/material/Tooltip';
-import { signOut } from "next-auth/react";
+import Tooltip from '@mui/material/Tooltip'
+import { signOut, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 function NavBar() {
     const pathname = usePathname(); // Hook to check current active path
-    const router = useRouter();
+    const router = useRouter();     // Use to redirect pages
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const { data: session } = useSession(); // Check if there is an active session to conditionally display the logout icon
 
     const handleLogout = async () => {
         setIsLoggingOut(true);
@@ -46,11 +47,16 @@ function NavBar() {
                         </Nav>
                         <Nav>
                             <Nav.Link href="/profile" className={`${faunaOne.className} nav-link ${pathname === '/profile' ? 'active' : ''}`}>Profile</Nav.Link>
-                            <Tooltip title="Logout" arrow>
-                                <Nav.Link className={`btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button ${isLoggingOut ? 'disabled' : ''}`}
-                                    onClick={() => handleLogout()}>
-                                    <LogoutIcon className='custom-icon' /></Nav.Link>
-                            </Tooltip>
+                            {session && (
+                                <Tooltip title="Logout" arrow>
+                                    <Nav.Link
+                                        className={`btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button ${isLoggingOut ? 'disabled' : ''}`}
+                                        onClick={handleLogout}
+                                    >
+                                        <LogoutIcon className="custom-icon" />
+                                    </Nav.Link>
+                                </Tooltip>
+                            )}
                         </Nav>
                     </Navbar.Collapse>
                 </Container>
@@ -59,3 +65,12 @@ function NavBar() {
     )
 }
 export default NavBar
+
+/*<Nav>
+                            <Nav.Link href="/profile" className={`${faunaOne.className} nav-link ${pathname === '/profile' ? 'active' : ''}`}>Profile</Nav.Link>
+                            <Tooltip title="Logout" arrow>
+                                <Nav.Link className={`btn btn-link btn-floating btn-outline-dark btn-lg text-dark icon-button ${isLoggingOut ? 'disabled' : ''}`}
+                                    onClick={() => handleLogout()}>
+                                    <LogoutIcon className='custom-icon' /></Nav.Link>
+                            </Tooltip>
+                        </Nav> */
