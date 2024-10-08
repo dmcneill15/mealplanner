@@ -44,6 +44,7 @@ jest.mock('next/server', () => ({
 
 describe('POST /api/user', () => {
     it('should create a new user and return 200', async () => {
+        
         const { req, res } = createMocks({
             method: 'POST',
         });

@@ -58,32 +58,6 @@ export const addRecipe = async (newRecipe, user_id) => {
     }
 };
 
-/*export const addRecipe = async (newRecipe) => {
-    const newRecipeWithId = {
-        ...newRecipe,
-        user_id: "66f739adc717200fa34ac24c",     //force in John's user ID for now - NOTE THIS IS DIFFERENT TO _id
-    };
-    try {
-        const response = await fetch(`${baseURL}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(newRecipeWithId)
-        });
-
-        if (response.ok) {
-            return response.json();
-        } else {
-            console.error('Failed to delete recipe');
-            return { success: false };
-        }
-    } catch (error) {
-        console.error('Error adding recipe:', error);
-        throw error;
-    }
-};*/
-
 export const deleteRecipe = async (recipeId) => {
     try {
         const response = await fetch(`${baseURL}`, {

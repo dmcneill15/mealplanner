@@ -22,8 +22,6 @@ export async function POST(req) {
   await connectToDatabase();
 
   try {
-    /*const body = await req.json();
-    const user = await User.findOne({ user_id: body.user_id });*/
     const body = await req.json();
     const { user_id, ...recipeData } = body;
 
