@@ -36,5 +36,40 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
 
-## IOD Capstone Project: Plan to Plate Meal Planner
-2024/10/03
+# IOD Capstone - Meal Planner - Plan to Plate
+
+## Getting Started
+
+To run the development on your local machine, follow these steps:
+
+1. Clone this repo to your local.
+   ```bash
+   git clone https://xxx
+   ```
+
+2. Navigate into the mealplanner directory.
+   ```bash
+   cd ./mealplanner
+   ```
+
+3. Install dependencies.
+   ```bash
+   npm install
+   ```
+
+Before running the server, you will need to set up a MongoDB database:
+
+1. Install MongoDB Compass or work from Atlas.
+2. Create a `.env.local` file in the root of the project and include your MongoDB connection string.
+   ```bash
+   MONGODB_URI=
+   ```
+
+3. Set up schemas & dummy data.
+
+Head back into the project and run:
+```bash
+npm run dev
+```
+
+The project will start up on [localhost:3000](http://localhost:3000).
