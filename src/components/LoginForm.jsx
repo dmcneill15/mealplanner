@@ -10,6 +10,7 @@ function LoginForm() {
     const [formData, setFormData] = useState({ email: '', password: '' }); // Use a plain object for form data
     const [message, setMessage] = useState(null); // Message to display success or failed login
     const [variant, setVariant] = useState(''); // 'success' or 'danger'
+    const [isLoggingIn, setIsLoggingIn] = useState(false);
     const router = useRouter(); // Router to redirect to home page on successful login
 
     const handleChange = (e) => {
@@ -19,6 +20,7 @@ function LoginForm() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setIsLoggingIn(true);
         try {
             const result = await signIn("credentials", {
                 email: formData.email,
@@ -38,6 +40,8 @@ function LoginForm() {
         } catch (error) {
             setMessage('Error: ' + error.message);
             setVariant('danger');
+        } finally{
+            setIsLoggingIn(false);
         }
     };
 
@@ -55,7 +59,10 @@ function LoginForm() {
                         <Form.Label className={`${faunaOne.className} intro-paragraph`}>Password</Form.Label>
                         <Form.Control type="password" placeholder="Password" name="password" value={formData.password} onChange={handleChange} />
                     </Form.Group>
-                    <Button className={`${faunaOne.className} center button-link`} variant="dark" type='submit'>Login</Button>
+                    <Button className={`button-link mt-3`} variant="dark" type="submit" disabled={isLoggingIn}>
+                        {isLoggingIn ? 'Logging In...' : 'Login'}
+                    </Button>
+
                 </Form>
             </Card>
         </Container>

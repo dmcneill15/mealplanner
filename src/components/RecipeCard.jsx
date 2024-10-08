@@ -21,9 +21,6 @@ import { fontCinzel, faunaOne } from '@/lib/fonts';
 export default function RecipeCard({ recipes, user }) {
     const [currentRecipes, setCurrentRecipes] = useState(recipes || []);    // Set initial state to recipes passed in or set to empty if no recipe data
     const [searchQuery, setSearchQuery] = useState('');                     // State for search query
-
-    //const user_id = '66f739adc717200fa34ac24c';
-    //const user_id = '66fb8efadbee721364a45c8d';
     const user_id = user._id;
 
     // Use useEffect to fetch recipes when the component mounts
@@ -40,7 +37,7 @@ export default function RecipeCard({ recipes, user }) {
         };
 
         fetchData();
-    }, []); // Empty dependency array means it runs only once on mount
+    }, ); // Empty dependency array means it runs only once on mount
 
     /*--- DELETE recipe from the catalog --- */
     // Use the custom hook, passing the function to set the current recipes
