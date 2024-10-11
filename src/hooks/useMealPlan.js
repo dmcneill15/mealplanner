@@ -4,18 +4,10 @@ import { addRecipeToMealPlan, getUserMealPlan, updateRecipeInMealPlan, deleteMea
 
 export function useMealPlan(user_id) {
     const [recipeCalendar, setRecipeCalendar] = useState([]);
-    const [loading, setLoading] = useState(true);  // Add loading state
-    const [error, setError] = useState(null);      // Add error state for better debugging
-
+    
     useEffect(() => {
-        if (!user_id) {
-            setLoading(false);
-            return;  // Exit early if user_id is not available
-        }
-
         const fetchMealPlan = async () => {
             try {
-                setLoading(true);  // Set loading to true before fetch starts
                 const mealPlan = await getUserMealPlan(user_id);
                 if (mealPlan.data && Array.isArray(mealPlan.data)) {
                     const formattedEvents = mealPlan.data.map(item => ({
@@ -30,9 +22,6 @@ export function useMealPlan(user_id) {
                 }
             } catch (error) {
                 console.error('Error fetching meal plan:', error);
-                setError(error);  // Set the error state if there's an issue
-            } finally {
-                setLoading(false);  // Stop loading after fetch completes
             }
         };
         fetchMealPlan();

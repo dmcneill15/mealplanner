@@ -3,31 +3,26 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { Card, Container, ListGroup } from 'react-bootstrap';
 import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
-import { Spinner } from 'react-bootstrap';
 
 function ProfileCard() {
     const { data: session, status } = useSession(); // Use the status of the active session to display loading wheel if still busy loading
-
-    // Display loading spinner if status is loading
-    if (status === 'loading') {
-        return (
-            <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-                <Spinner animation="border" role="status">
-                    <span className="visually-hidden">Loading...</span>
-                </Spinner>
-            </div>
-        );
-    }
-
-    const user = session?.user; // Get the current user from the session
-    if (!user) {
-        return <p>No user information available. Please log in.</p>; // Handle case where user is not available
-    }
+    const [loading, setLoading] = useState(true);
 
     const handleAction = (item) => {
         console.log(`Action for ${item} clicked`);
         // Add action handling button logic here
     };
+
+    useEffect(() => {
+        if (status === 'authenticated') {
+            setLoading(false);
+        }
+    }, [status]);
+
+    const user = session?.user; // Get the current user from the session
+    if (!user) {
+        return <p>No user information available. Please log in.</p>; // Handle case where user is not available
+    }
 
     return (
         <Container>

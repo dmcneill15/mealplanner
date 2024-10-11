@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
-import { fetchUserRecipes } from '@/app/api/recipesApi';
+import { fetchRecipes, fetchUserRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from '../AddRecipePopup';
 import DeletePopup from '../DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
@@ -15,16 +15,16 @@ import { Button, Form } from 'react-bootstrap';
 import { faunaOne, montega } from '@/lib/fonts';
 
 import { useState, useEffect, useRef } from 'react'
-import { useSession } from "next-auth/react";
-import { Spinner } from 'react-bootstrap';
+
 
 export default function Calendar({ user }) {
-    const { data: session, status } = useSession(); // Use the status of the active session to display loading wheel if still busy loading
 
+    //const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
     const user_id = user._id;
     const [recipeList, setRecipeList] = useState([]);   // List of all users recipes
     const [refresh, setRefresh] = useState(false);      // Flag to refresh the calendar display
     const [searchQuery, setSearchQuery] = useState(''); // State for search query
+    const [loading, setLoading] = useState(true);
 
     const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
@@ -33,12 +33,12 @@ export default function Calendar({ user }) {
         setRefresh(prev => !prev);
     };
 
-    /*---Hook to manipulate meal plan---*/
+    /*---ADD Recipe to Meal Plan Hook---*/
     const {
         recipeCalendar,
         addEvent,
         updateEvent,
-        deleteRecipeFromMealPlan,
+        deleteRecipeFromMealPlan
     } = useMealPlan(user_id);
     /*--------------------------------*/
 
@@ -69,6 +69,7 @@ export default function Calendar({ user }) {
     useEffect(() => {
         const getRecipes = async () => {
             try {
+                setLoading(true);
                 const recipes = await fetchUserRecipes(user_id);
                 const formattedRecipes = recipes.map(recipe => ({
                     recipe_title: recipe.recipe_title,
@@ -77,7 +78,9 @@ export default function Calendar({ user }) {
                 setRecipeList(formattedRecipes);
             } catch (error) {
                 console.error('Error fetching recipes:', error);
-            } 
+            } finally {
+                setLoading(false);
+            }
         };
         getRecipes();
     }, [refresh]);  //can't use recipeList here as it may cause infinte loop. Rather use a flag to refresh recipe display on calendar 
@@ -146,16 +149,6 @@ export default function Calendar({ user }) {
         deleteRecipeFromMealPlan(recipeToDelete, handleCloseDelete, setIsDeleting);
     };
 
-    if (status === 'loading') {
-        return (
-          <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-            <Spinner animation="border" role="status">
-              <span className="visually-hidden">Loading...</span>
-            </Spinner>
-          </div>
-        );
-      }
-
     return (
         <div style={styles.container}>
             <div style={styles.leftSide} className={`${faunaOne.className}`}>
@@ -200,7 +193,10 @@ export default function Calendar({ user }) {
                     </Tooltip>
                 </div>
                 <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
-                        {filteredRecipes.map(recipe => (
+                    {loading ? (
+                        <p>Loading recipes...</p>
+                    ) : (
+                        filteredRecipes.map(recipe => (
                             <div
                                 className={`${faunaOne.className} fc-event center mb-2`}
                                 title={recipe.recipe_title}
@@ -210,7 +206,8 @@ export default function Calendar({ user }) {
                             >
                                 {recipe.recipe_title}
                             </div>
-                        ))}
+                        ))
+                    )}
                 </div>
             </div>
             {/**ADD RECIPE Modal Pop UP */}
