@@ -61,6 +61,7 @@ export default function RecipeCard({ recipes, user }) {
         setNewRecipe,
         showAddRecipe,
         isAdding,
+        errorMessage,
         handleCloseAddRecipe,
         handleShowAddRecipe,
         handleAddRecipe,
@@ -189,6 +190,7 @@ export default function RecipeCard({ recipes, user }) {
                 setNewRecipe={setNewRecipe}
                 handleAddRecipe={handleAddRecipe}
                 isAdding={isAdding}
+                errorMessage={errorMessage}
             />
 
             {/**UPDATE RECIPE Modal Pop UP */}

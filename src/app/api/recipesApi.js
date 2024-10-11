@@ -37,6 +37,7 @@ export const addRecipe = async (newRecipe, user_id) => {
         ...newRecipe,
         user_id: user_id,
     };
+    console.log('New recipe with userid:', newRecipeWithId);
     try {
         const response = await fetch(`${baseURL}`, {
             method: 'POST',
@@ -50,7 +51,7 @@ export const addRecipe = async (newRecipe, user_id) => {
             return response.json();
         } else {
             console.error('Failed to add recipe');
-            return { success: false };
+            return response.json();
         }
     } catch (error) {
         console.error('Error adding recipe:', error);

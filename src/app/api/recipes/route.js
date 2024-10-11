@@ -23,16 +23,26 @@ export async function POST(req) {
 
   try {
     const body = await req.json();
-    const { user_id, ...recipeData } = body;
+    console.log("New recipe body:", body);
+    const { user_id, recipe_title, method, servings, image_url } = body;
+
+
+    // Check if a recipe with the same title exists for this user
+    const existingRecipe = await Recipe.findOne({ user_id, recipe_title });
+    if (existingRecipe) {
+      return NextResponse.json({ result: 409, message: 'Recipe title already exists for this user' }, { status: 409 });
+    }
 
     // Find the user by user_id
-    const user = await User.findById(user_id);
-
-    if (user) {
-      const newRecipe = new Recipe({
-        ...recipeData,
-        user_id: user._id
-      });
+      const user = await User.findById(user_id);
+      if (user) {
+        const newRecipe = new Recipe({
+          recipe_title,  // Ensure this is passed
+          method,
+          servings,
+          image_url,
+          user_id: user._id,
+        });
 
       const savedRecipe = await newRecipe.save();
       return NextResponse.json({ result: 200, data: savedRecipe }, { status: 200 });
