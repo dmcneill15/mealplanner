@@ -29,7 +29,7 @@ function RegisterForm() {
                     router.push('/login');
                 }, 3000);               // Redirect to login page after 3 seconds
             } else if (result.result === 409) {     
-                setMessage('User already exists!');
+                setMessage('User already exists! Please try a different email address');
                 setVariant('danger');
             } else {
                 setMessage('Error: ' + result.error);
