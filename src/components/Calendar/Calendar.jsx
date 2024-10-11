@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import listPlugin from '@fullcalendar/list'; // Import List plugin
 import interactionPlugin, { Draggable } from '@fullcalendar/interaction'
-import { fetchRecipes, fetchUserRecipes } from '@/app/api/recipesApi';
+import { fetchUserRecipes } from '@/app/api/recipesApi';
 import AddRecipePopup from '../AddRecipePopup';
 import DeletePopup from '../DeletePopup';
 import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
@@ -24,7 +24,6 @@ export default function Calendar({ user }) {
     const [recipeList, setRecipeList] = useState([]);   // List of all users recipes
     const [refresh, setRefresh] = useState(false);      // Flag to refresh the calendar display
     const [searchQuery, setSearchQuery] = useState(''); // State for search query
-    const [loading, setLoading] = useState(true);
 
     const draggableInitialized = useRef(false);         // Track Draggable initialization
     const calendarRef = useRef(null);
@@ -33,12 +32,13 @@ export default function Calendar({ user }) {
         setRefresh(prev => !prev);
     };
 
-    /*---ADD Recipe to Meal Plan Hook---*/
+    /*---Hook to manipulate meal plan recipes---*/
     const {
         recipeCalendar,
         addEvent,
         updateEvent,
-        deleteRecipeFromMealPlan
+        deleteRecipeFromMealPlan,
+        loading
     } = useMealPlan(user_id);
     /*--------------------------------*/
 
@@ -69,7 +69,6 @@ export default function Calendar({ user }) {
     useEffect(() => {
         const getRecipes = async () => {
             try {
-                setLoading(true);
                 const recipes = await fetchUserRecipes(user_id);
                 const formattedRecipes = recipes.map(recipe => ({
                     recipe_title: recipe.recipe_title,
@@ -78,8 +77,6 @@ export default function Calendar({ user }) {
                 setRecipeList(formattedRecipes);
             } catch (error) {
                 console.error('Error fetching recipes:', error);
-            } finally {
-                setLoading(false);
             }
         };
         getRecipes();
@@ -151,84 +148,87 @@ export default function Calendar({ user }) {
 
     return (
         <div style={styles.container}>
-            <div style={styles.leftSide} className={`${faunaOne.className}`}>
-                <div style={styles.calendarContainer}>
-                    <FullCalendar
-                        ref={calendarRef}
-                        headerToolbar={{
-                            left: 'today prev next',
-                            center: 'title',
-                            right: 'dayGridMonth listMonth'
-                        }}
-                        plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-                        initialView="dayGridMonth"
-                        timeZone="local"
-                        events={recipeCalendar}
-                        editable={true}
-                        droppable={true}
-                        selectable={true}
-                        eventReceive={handleEventReceive}   //handles when external recipe is added
-                        eventDrop={handleEventDrop}         //handles when exisiting recipe is moved
-                        eventClick={handleEventClick}       //handles removing the entry from the mealplan
+            {loading ? (  
+                <p>Loading your meal plan...</p> 
+            ) : (
+                <>
+                    <div style={styles.leftSide} className={`${faunaOne.className}`}>
+                        <div style={styles.calendarContainer}>
+                            <FullCalendar
+                                ref={calendarRef}
+                                headerToolbar={{
+                                    left: 'today prev next',
+                                    center: 'title',
+                                    right: 'dayGridMonth listMonth'
+                                }}
+                                plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+                                initialView="dayGridMonth"
+                                timeZone="local"
+                                events={recipeCalendar}
+                                editable={true}
+                                droppable={true}
+                                selectable={true}
+                                eventReceive={handleEventReceive}   // Handles when external recipe is added
+                                eventDrop={handleEventDrop}         // Handles when existing recipe is moved
+                                eventClick={handleEventClick}       // Handles removing the entry from the meal plan
+                            />
+                        </div>
+                    </div>
+                    <div style={styles.rightSide} id="draggable-el" className='me-3'>
+                        <h2 className={`${montega.className} sub-head center`}>Add Your Recipes</h2>
+                        <div className="center mb-2 bg-white">
+                            <Form className="d-flex me-2" size="sm">
+                                <Form.Control
+                                    type="search"
+                                    placeholder="Search"
+                                    className="me-2"
+                                    aria-label="Search"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                />
+                            </Form>
+                            <Tooltip title="Create New Recipe" arrow>
+                                <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
+                                    <Button variant="outline-dark"><AddIcon className='custom-icon footer-icon-size' /></Button>
+                                </a>
+                            </Tooltip>
+                        </div>
+                        <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
+                            {filteredRecipes.map(recipe => (
+                                <div
+                                    className={`${faunaOne.className} fc-event center mb-2`}
+                                    title={recipe.recipe_title}
+                                    data-id={recipe.id}
+                                    key={recipe.id}
+                                    style={{ cursor: 'pointer' }}
+                                >
+                                    {recipe.recipe_title}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                    {/**ADD RECIPE Modal Pop UP */}
+                    <AddRecipePopup
+                        show={showAddRecipe}
+                        onHide={handleCloseAddRecipe}
+                        newRecipe={newRecipe}
+                        setNewRecipe={setNewRecipe}
+                        handleAddRecipe={handleAddRecipe}
+                        isAdding={isAdding}
                     />
-                </div>
-            </div>
-            <div style={styles.rightSide} id="draggable-el" className='me-3'>
-                <h2 className={`${montega.className} sub-head center`}>Add Your Recipes</h2>
-                <div className="center mb-2 bg-white">
-                    <Form className="d-flex me-2" size="sm">
-                        <Form.Control
-                            type="search"
-                            placeholder="Search"
-                            className="me-2"
-                            aria-label="Search"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                        />
-                    </Form>
-                    <Tooltip title="Create New Recipe" arrow>
-                        <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
-                            <Button variant="outline-dark"><AddIcon className='custom-icon footer-icon-size' /></Button>
-                        </a>
-                    </Tooltip>
-                </div>
-                <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
-                    {loading ? (
-                        <p>Loading recipes...</p>
-                    ) : (
-                        filteredRecipes.map(recipe => (
-                            <div
-                                className={`${faunaOne.className} fc-event center mb-2`}
-                                title={recipe.recipe_title}
-                                data-id={recipe.id}
-                                key={recipe.id}
-                                style={{ cursor: 'pointer' }}
-                            >
-                                {recipe.recipe_title}
-                            </div>
-                        ))
-                    )}
-                </div>
-            </div>
-            {/**ADD RECIPE Modal Pop UP */}
-            <AddRecipePopup
-                show={showAddRecipe}
-                onHide={handleCloseAddRecipe}
-                newRecipe={newRecipe}
-                setNewRecipe={setNewRecipe}
-                handleAddRecipe={handleAddRecipe}
-                isAdding={isAdding}
-            />
-            {/**DELETE RECIPE Modal Pop UP */}
-            <DeletePopup
-                show={showDelete}
-                onHide={handleCloseDelete}
-                recipeTitle={recipeToDelete?.title}
-                handleDelete={handleDeleteFromMealPlan}
-                isDeleting={isDeleting}
-            />
+                    {/**DELETE RECIPE Modal Pop UP */}
+                    <DeletePopup
+                        show={showDelete}
+                        onHide={handleCloseDelete}
+                        recipeTitle={recipeToDelete?.title}
+                        handleDelete={handleDeleteFromMealPlan}
+                        isDeleting={isDeleting}
+                    />
+                </>
+            )}
         </div>
     );
+
 };
 
 const styles = {
