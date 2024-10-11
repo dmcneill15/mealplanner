@@ -1,12 +1,23 @@
-'use client'
+'use client';
+import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
-import { Card, Container, ListGroup } from 'react-bootstrap';
-import { Spinner } from 'react-bootstrap';
+import { Card, Container, ListGroup, Button, Spinner } from 'react-bootstrap';
 import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
+import UpdateUserPopup from './UpdateUserPopup'; // Adjust the path as needed
 
 function ProfileCard() {
     const { data: session, status } = useSession(); // Check if there is an active session
-    const user = session?.user; // Get the current user from the session
+    const [userData, setUserData] = useState(null); // Local state to manage user data
+
+    // Effect to set userData when session is loaded
+    useEffect(() => {
+        if (session) {
+            setUserData(session.user); // Set userData when session is available
+        }
+    }, [session]); // Depend on session to update when it changes
+
+    // State for the update user popup visibility
+    const [showUpdatePopup, setShowUpdatePopup] = useState(false);
 
     // Show spinner while loading
     if (status === 'loading') {
@@ -20,38 +31,49 @@ function ProfileCard() {
     }
 
     // Handle case where user is not available
-    if (!user) {
+    if (!userData) { // Change this to check userData instead of user
         return <p>No user information available. Please log in.</p>;
     }
 
-    // You can now use the user object here, and implement your action handler
-    const handleAction = (item) => {
-        console.log(`Action for ${item} clicked`);
-        // Add action handling button logic here
+    // Action handler to show the update user popup
+    const handleAction = () => {
+        setShowUpdatePopup(true); // Show the popup
+    };
+
+    // Callback to refresh the user data after updating user info
+    const refreshUserData = (updatedUser) => {
+        setUserData(updatedUser); // Update the local user data state
     };
 
     return (
         <Container>
-            <h2 className={`${montega.className} title center sub-head`}>Hello, {user.username}!</h2>
+            <h2 className={`${montega.className} title center sub-head`}>Hello, {userData.username}!</h2>
             <Card className="text-center mt-4" style={{ maxWidth: '500px', margin: 'auto' }}>
                 <Card.Header className={`${fontCinzel.className} slogan center`}>Settings</Card.Header>
                 <Card.Body>
                     <ListGroup>
                         <ListGroup.Item className={`${faunaOne.className} d-flex justify-content-between align-items-center`}>
-                            Username: {user.username}
-                            <a className={`${faunaOne.className} center custom-btn btn btn-outline-dark`} onClick={() => handleAction(user.username)}>Update</a>
+                            Username: {userData.username}
                         </ListGroup.Item>
                         <ListGroup.Item className={`${faunaOne.className} d-flex justify-content-between align-items-center`}>
-                            Email: {user.email_id}
-                            <a className={`${faunaOne.className} center custom-btn btn btn-outline-dark`} onClick={() => handleAction(user.email_id)}>Update</a>
+                            Email: {userData.email_id}
                         </ListGroup.Item>
                         <ListGroup.Item className={`${faunaOne.className} d-flex justify-content-between align-items-center`}>
-                            Password: {'*'.repeat(user?.password?.length || 0)} {/* Display asterisks for length of password */}
-                            <a className={`${faunaOne.className} center custom-btn btn btn-outline-dark`} onClick={() => handleAction('password')}>Update</a>
+                            Password: {'*'.repeat(userData?.password?.length || 0)}
                         </ListGroup.Item>
                     </ListGroup>
+                    <Button className={`${faunaOne.className} center button-link mt-3`} variant="dark" onClick={handleAction}>
+                        Update Details
+                    </Button>
                 </Card.Body>
             </Card>
+
+            {/* Render the UpdateUserPopup */}
+            <UpdateUserPopup
+                show={showUpdatePopup}
+                onHide={() => setShowUpdatePopup(false)} // Close the popup
+                onUpdate={refreshUserData} // Callback to refresh user data
+            />
         </Container>
     );
 }

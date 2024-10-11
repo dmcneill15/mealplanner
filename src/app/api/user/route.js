@@ -31,3 +31,31 @@ export async function POST(req) {
         return NextResponse.json({ result: 500, error: err.message }, { status: 500 });
     }
 }
+
+// PUT to update a user
+export async function PUT(req) {
+    await connectToDatabase();
+
+    try {
+        const body = await req.json();
+        const { _id, username, email_id, password } = body;
+
+        // Find the user by user_id
+        const user = await User.findById(_id);
+        if (!user) {
+            return NextResponse.json({ result: 404, message: 'User not found' }, { status: 404 });
+        }
+
+        // Update user fields
+        user.username = username || user.username; // Only update if a new value is provided
+        user.email_id = email_id || user.email_id;
+        user.password = password || user.password; // In a real application, you'd hash this
+
+        // Save the updated user
+        const updatedUser = await user.save();
+        return NextResponse.json({ result: 200, data: updatedUser }, { status: 200 });
+    } catch (err) {
+        console.error(err);
+        return NextResponse.json({ result: 500, error: err.message }, { status: 500 });
+    }
+}

@@ -55,6 +55,7 @@ export async function POST(req) {
   }
 }
 
+//DELETE to delete a recipe
 export async function DELETE(req) {
   await connectToDatabase();
 
@@ -79,6 +80,7 @@ export async function DELETE(req) {
 
 }
 
+//PUT to update a recipe
 export async function PUT(req) {
   await connectToDatabase();
 
