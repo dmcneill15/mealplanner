@@ -22,3 +22,25 @@ export const addUser = async (newUser) => {
         throw error;
     }
 }; 
+
+export const updateUser = async (updatedUser) => {
+    try {
+        const response = await fetch(`${baseURL}`, { // Update the URL to your new update route
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedUser),
+        });
+
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.error('Failed to update user');
+            return response.json();
+        }
+    } catch (error) {
+        console.error('Error updating user:', error);
+        throw error;
+    }
+};

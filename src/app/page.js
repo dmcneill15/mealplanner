@@ -24,7 +24,7 @@ export default function Home() {
         <div className="title-container">
           <h2 className={`${montega.className} sub-head center`}> Welcome to your personal meal planner!</h2>
           <p className={`${faunaOne.className} text-center mt-4 intro-paragraph`}>
-            Create and organize all in one place <br></br>
+            One place to create and organize it all! <br></br>
           </p>
           <p className={`${faunaOne.className} text-center mt-4 intro-paragraph`}>
             New recipe ideas? Save them here.<br></br>
