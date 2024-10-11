@@ -13,7 +13,7 @@ Some key features:
 This is a [Next.js](https://nextjs.org) project deployed on the the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) and making use of a [MongoDB database](https://www.mongodb.com/products/platform/atlas-database).
 
 
-## Getting Started
+## Getting Started to Run on Your Local
 
 To run the development on your local machine, follow these steps:
 
