@@ -2,20 +2,19 @@
 import { useState, useEffect } from 'react';
 import { useSession } from "next-auth/react";
 import { Card, Col, Row, Container, Button, Form } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import PlaylistAddIcon from '@mui/icons-material/PlaylistAdd';
 import EditNoteIcon from '@mui/icons-material/EditNote';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import Tooltip from '@mui/material/Tooltip';
-import { Spinner } from 'react-bootstrap';
-
 import { fetchUserRecipes } from '@/app/api/recipesApi'
 import DeletePopup from './DeletePopup';
-import { useDeletePopup } from '@/hooks/useDeletePopup';    //custom hook to handle delete popup
-import RecipeDetailsPopup from './RecipeDetailsPopup';
-import { useRecipeDetailsPopup } from '@/hooks/useRecipeDetailsPopup';
-import AddRecipePopup from './AddRecipePopup';
-import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import UpdateRecipePopup from './UpdateRecipePopup';
+import AddRecipePopup from './AddRecipePopup';
+import RecipeDetailsPopup from './RecipeDetailsPopup';
+import { useDeletePopup } from '@/hooks/useDeletePopup';    //custom hook to handle delete popup
+import { useRecipeDetailsPopup } from '@/hooks/useRecipeDetailsPopup';
+import { useAddRecipePopup } from '@/hooks/useAddRecipePopup'
 import { useUpdateRecipePopup } from '@/hooks/useUpdateRecipePopup';
 import { fontCinzel, faunaOne } from '@/lib/fonts';
 
