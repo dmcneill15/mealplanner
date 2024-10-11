@@ -1,6 +1,6 @@
 import { Modal, Button, Form } from 'react-bootstrap';
 
-const AddRecipePopup = ({ show, onHide, handleAddRecipe, newRecipe, setNewRecipe, isAdding }) => {
+const AddRecipePopup = ({ show, onHide, handleAddRecipe, newRecipe, setNewRecipe, isAdding, errorMessage }) => {
     return (
         <Modal show={show} onHide={onHide}>
             <Modal.Header closeButton>
@@ -8,6 +8,7 @@ const AddRecipePopup = ({ show, onHide, handleAddRecipe, newRecipe, setNewRecipe
             </Modal.Header>
             <Modal.Body>
                 <Form onSubmit={handleAddRecipe}>
+                    {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>} {/* Display error message */}
                     <Form.Group controlId="formRecipeTitle">
                         <Form.Label>Recipe Title*</Form.Label>
                         <Form.Control
