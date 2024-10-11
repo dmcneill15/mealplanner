@@ -15,11 +15,12 @@ import { Button, Form } from 'react-bootstrap';
 import { faunaOne, montega } from '@/lib/fonts';
 
 import { useState, useEffect, useRef } from 'react'
-
+import { useSession } from "next-auth/react";
+import { Spinner } from 'react-bootstrap';
 
 export default function Calendar({ user }) {
+    const { data: session, status } = useSession(); // Use the status of the active session to display loading wheel if still busy loading
 
-    //const userId = '66f739adc717200fa34ac24b';          // Hardcoded user ID for now
     const user_id = user._id;
     const [recipeList, setRecipeList] = useState([]);   // List of all users recipes
     const [refresh, setRefresh] = useState(false);      // Flag to refresh the calendar display
@@ -32,13 +33,12 @@ export default function Calendar({ user }) {
         setRefresh(prev => !prev);
     };
 
-    /*---Hook to manipulate meal plan recipes---*/
+    /*---Hook to manipulate meal plan---*/
     const {
         recipeCalendar,
         addEvent,
         updateEvent,
         deleteRecipeFromMealPlan,
-        loading
     } = useMealPlan(user_id);
     /*--------------------------------*/
 
@@ -77,7 +77,7 @@ export default function Calendar({ user }) {
                 setRecipeList(formattedRecipes);
             } catch (error) {
                 console.error('Error fetching recipes:', error);
-            }
+            } 
         };
         getRecipes();
     }, [refresh]);  //can't use recipeList here as it may cause infinte loop. Rather use a flag to refresh recipe display on calendar 
@@ -146,89 +146,92 @@ export default function Calendar({ user }) {
         deleteRecipeFromMealPlan(recipeToDelete, handleCloseDelete, setIsDeleting);
     };
 
+    if (status === 'loading') {
+        return (
+          <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+            <Spinner animation="border" role="status">
+              <span className="visually-hidden">Loading...</span>
+            </Spinner>
+          </div>
+        );
+      }
+
     return (
         <div style={styles.container}>
-            {loading ? (  
-                <p>Loading your meal plan...</p> 
-            ) : (
-                <>
-                    <div style={styles.leftSide} className={`${faunaOne.className}`}>
-                        <div style={styles.calendarContainer}>
-                            <FullCalendar
-                                ref={calendarRef}
-                                headerToolbar={{
-                                    left: 'today prev next',
-                                    center: 'title',
-                                    right: 'dayGridMonth listMonth'
-                                }}
-                                plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
-                                initialView="dayGridMonth"
-                                timeZone="local"
-                                events={recipeCalendar}
-                                editable={true}
-                                droppable={true}
-                                selectable={true}
-                                eventReceive={handleEventReceive}   // Handles when external recipe is added
-                                eventDrop={handleEventDrop}         // Handles when existing recipe is moved
-                                eventClick={handleEventClick}       // Handles removing the entry from the meal plan
-                            />
-                        </div>
-                    </div>
-                    <div style={styles.rightSide} id="draggable-el" className='me-3'>
-                        <h2 className={`${montega.className} sub-head center`}>Add Your Recipes</h2>
-                        <div className="center mb-2 bg-white">
-                            <Form className="d-flex me-2" size="sm">
-                                <Form.Control
-                                    type="search"
-                                    placeholder="Search"
-                                    className="me-2"
-                                    aria-label="Search"
-                                    value={searchQuery}
-                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                />
-                            </Form>
-                            <Tooltip title="Create New Recipe" arrow>
-                                <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
-                                    <Button variant="outline-dark"><AddIcon className='custom-icon footer-icon-size' /></Button>
-                                </a>
-                            </Tooltip>
-                        </div>
-                        <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
-                            {filteredRecipes.map(recipe => (
-                                <div
-                                    className={`${faunaOne.className} fc-event center mb-2`}
-                                    title={recipe.recipe_title}
-                                    data-id={recipe.id}
-                                    key={recipe.id}
-                                    style={{ cursor: 'pointer' }}
-                                >
-                                    {recipe.recipe_title}
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                    {/**ADD RECIPE Modal Pop UP */}
-                    <AddRecipePopup
-                        show={showAddRecipe}
-                        onHide={handleCloseAddRecipe}
-                        newRecipe={newRecipe}
-                        setNewRecipe={setNewRecipe}
-                        handleAddRecipe={handleAddRecipe}
-                        isAdding={isAdding}
+            <div style={styles.leftSide} className={`${faunaOne.className}`}>
+                <div style={styles.calendarContainer}>
+                    <FullCalendar
+                        ref={calendarRef}
+                        headerToolbar={{
+                            left: 'today prev next',
+                            center: 'title',
+                            right: 'dayGridMonth listMonth'
+                        }}
+                        plugins={[dayGridPlugin, interactionPlugin, listPlugin]}
+                        initialView="dayGridMonth"
+                        timeZone="local"
+                        events={recipeCalendar}
+                        editable={true}
+                        droppable={true}
+                        selectable={true}
+                        eventReceive={handleEventReceive}   //handles when external recipe is added
+                        eventDrop={handleEventDrop}         //handles when exisiting recipe is moved
+                        eventClick={handleEventClick}       //handles removing the entry from the mealplan
                     />
-                    {/**DELETE RECIPE Modal Pop UP */}
-                    <DeletePopup
-                        show={showDelete}
-                        onHide={handleCloseDelete}
-                        recipeTitle={recipeToDelete?.title}
-                        handleDelete={handleDeleteFromMealPlan}
-                        isDeleting={isDeleting}
-                    />
-                </>
-            )}
+                </div>
+            </div>
+            <div style={styles.rightSide} id="draggable-el" className='me-3'>
+                <h2 className={`${montega.className} sub-head center`}>Add Your Recipes</h2>
+                <div className="center mb-2 bg-white">
+                    <Form className="d-flex me-2" size="sm">
+                        <Form.Control
+                            type="search"
+                            placeholder="Search"
+                            className="me-2"
+                            aria-label="Search"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </Form>
+                    <Tooltip title="Create New Recipe" arrow>
+                        <a className={`${faunaOne.className} title center`} href="#" role="button" onClick={handleShowAddRecipe}>
+                            <Button variant="outline-dark"><AddIcon className='custom-icon footer-icon-size' /></Button>
+                        </a>
+                    </Tooltip>
+                </div>
+                <div style={{ ...styles.content, display: 'block' }} className='scroll-list-box intro-paragraph center border border-secondary rounded-3'>
+                        {filteredRecipes.map(recipe => (
+                            <div
+                                className={`${faunaOne.className} fc-event center mb-2`}
+                                title={recipe.recipe_title}
+                                data-id={recipe.id}
+                                key={recipe.id}
+                                style={{ cursor: 'pointer' }}
+                            >
+                                {recipe.recipe_title}
+                            </div>
+                        ))}
+                </div>
+            </div>
+            {/**ADD RECIPE Modal Pop UP */}
+            <AddRecipePopup
+                show={showAddRecipe}
+                onHide={handleCloseAddRecipe}
+                newRecipe={newRecipe}
+                setNewRecipe={setNewRecipe}
+                handleAddRecipe={handleAddRecipe}
+                isAdding={isAdding}
+            />
+            {/**DELETE RECIPE Modal Pop UP */}
+            <DeletePopup
+                show={showDelete}
+                onHide={handleCloseDelete}
+                recipeTitle={recipeToDelete?.title}
+                handleDelete={handleDeleteFromMealPlan}
+                isDeleting={isDeleting}
+            />
         </div>
     );
-
 };
 
 const styles = {
