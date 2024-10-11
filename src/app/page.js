@@ -1,5 +1,6 @@
 'use client'
 import { Button } from 'react-bootstrap';
+import { Spinner } from 'react-bootstrap';
 import Link from 'next/link';
 import { useSession } from "next-auth/react";
 import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
@@ -7,9 +8,15 @@ import { fontCinzel, faunaOne, montega } from '@/lib/fonts';
 export default function Home() {
   const { data: session,status } = useSession(); // Check if there is an active session to conditionally render buttons
 
-    if (status === 'loading') {
-      return null;
-    }
+  if (status === 'loading') {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+        <Spinner animation="border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </Spinner>
+      </div>
+    );
+  }
       
   return (
     <main>
