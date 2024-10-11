@@ -2,11 +2,11 @@
 
 Plan to Plate is a meal planning and recipe storage application.
 Some key features:
-- **Create your own user account to save your recipes & meal plans.
-- **Customise your own recipes, adding as much detail to each recipe as you need.
-- **Easily drag and drop your recipes on to a calendar to create your personalised meal plan.
-- **Switch your calendar between month or week view.
-- **Edit recipes when you see room for improvement.
+- Create your own user account to save your recipes & meal plans.
+- Customise your own recipes, adding as much detail to each recipe as you need.
+- Easily drag and drop your recipes on to a calendar to create your personalised meal plan.
+- Switch your calendar between month or week view.
+- Edit recipes when you see room for improvement.
 
 ## About the tech
 
